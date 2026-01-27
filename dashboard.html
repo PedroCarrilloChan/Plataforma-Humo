@@ -143,7 +143,7 @@
                         <div class="text-[10px] text-emerald-500 font-mono uppercase">System Core</div>
                         <div class="text-sm text-gray-300 leading-relaxed max-w-lg">
                             Bienvenido, Operador. El sistema está conectado a la base de datos en tiempo real.<br>
-                            Selecciona un usuario para <strong>análisis particular</strong> o revisa las métricas para <strong>control general</strong>.
+                            Selecciona un usuario para <strong>análisis particular</strong> o escribe un comando para <strong>conversar</strong>.
                         </div>
                     </div>
                 </div>
@@ -154,7 +154,7 @@
                 <form id="ai-form" class="flex gap-3" onsubmit="handleAiSubmit(event)">
                     <input type="text" id="ai-input" 
                         class="glass-input w-full px-4 py-3 rounded-lg font-mono text-sm placeholder-emerald-900/50" 
-                        placeholder="ID de usuario (ej: 5) o comando..." autocomplete="off">
+                        placeholder="ID de usuario (ej: 5) o chatea con la IA..." autocomplete="off">
                     <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-black font-bold px-6 py-2 rounded-lg transition flex items-center gap-2">
                         <i data-lucide="send" class="w-4 h-4"></i>
                     </button>
@@ -192,7 +192,6 @@
         lucide.createIcons();
 
         // --- CONFIGURACIÓN DE APIS REALES ---
-        // Asegúrate de que coinciden con tus URLs desplegadas
         const API_URL = "https://humo-api.smartpasses.workers.dev";
         const BRAIN_URL = "https://humo-brain.smartpasses.workers.dev";
         
@@ -201,19 +200,14 @@
         // --- 1. CARGAR DATOS GENERALES (REALES) ---
         async function fetchStats() {
             try {
-                // Usamos el endpoint /stats que creamos en el backend
                 const res = await fetch(`${API_URL}/stats`);
                 if(!res.ok) throw new Error('Network response was not ok');
                 const data = await res.json();
                 
-                // Actualizar Header
                 document.getElementById('stat-users').innerText = data.users || 0;
                 document.getElementById('stat-events').innerText = data.events || 0;
-
-                // Si hay insights recientes, podríamos mostrarlos, pero por ahora solo contadores
             } catch (e) {
                 console.error("Error fetching stats:", e);
-                // Fallback visual si falla
                 document.getElementById('stat-users').innerText = "ERR";
             }
         }
@@ -221,10 +215,9 @@
         // --- 2. CARGAR LISTA DE USUARIOS (PARTICULAR) ---
         async function fetchUsers() {
             const container = document.getElementById('user-list');
-            container.innerHTML = '<div class="absolute inset-0 flex items-center justify-center text-emerald-500/50"><i data-lucide="loader-2" class="w-6 h-6 animate-spin"></i></div>';
+            // Loader visible por defecto en HTML, lo mantenemos si refrescamos
             
             try {
-                // Usamos el endpoint /users que creamos en el backend
                 const res = await fetch(`${API_URL}/users`);
                 if(!res.ok) throw new Error('Network error');
                 const users = await res.json();
@@ -238,7 +231,7 @@
 
                 users.forEach(user => {
                     const div = document.createElement('div');
-                    div.className = "p-3 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer border border-transparent hover:border-emerald-500/30 transition group animate-fade-in";
+                    div.className = "p-3 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer border border-transparent hover:border-emerald-500/30 transition group animate-fade-in mb-2";
                     div.onclick = () => selectUser(user);
                     div.innerHTML = `
                         <div class="flex justify-between items-start mb-1">
@@ -262,35 +255,52 @@
             selectedUserId = user.id;
         }
 
-        // --- 3. INTELIGENCIA ARTIFICIAL (CEREBRO) ---
+        // --- 3. INTELIGENCIA ARTIFICIAL HÍBRIDA ---
         async function handleAiSubmit(e) {
             e.preventDefault();
             const input = document.getElementById('ai-input');
-            const userId = input.value.trim();
-            if (!userId) return;
+            const valor = input.value.trim();
+            if (!valor) return;
 
-            addMessageToChat('user', `Analizar Usuario ID: ${userId}`);
+            // DETECCION: ¿Es número (Análisis) o Texto (Chat)?
+            const isNumber = /^\d+$/.test(valor);
+            let payload = {};
+
+            if (isNumber) {
+                payload = { userId: parseInt(valor) };
+                addMessageToChat('user', `Analizar ID: ${valor}`);
+                selectedUserId = parseInt(valor);
+            } else {
+                payload = { prompt: valor };
+                if (selectedUserId) payload.userId = selectedUserId;
+                addMessageToChat('user', valor);
+            }
+
             input.value = '';
             input.disabled = true;
-
-            const loadingId = addMessageToChat('system', 'Consultando historial de eventos... <span class="animate-pulse">_</span>');
+            const loadingId = addMessageToChat('system', '<span class="animate-pulse">Procesando solicitud...</span>');
 
             try {
                 const response = await fetch(BRAIN_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: parseInt(userId) })
+                    body: JSON.stringify(payload)
                 });
 
                 const result = await response.json();
                 document.getElementById(loadingId).remove();
 
-                if (result.success && result.data) {
-                    renderAnalysisCard(result.data);
+                if (result.success) {
+                    if (result.mode === 'analysis') {
+                        renderAnalysisCard(result.data);
+                    } else {
+                        addMessageToChat('system', result.response);
+                    }
                 } else {
-                    addMessageToChat('system', `Error: ${result.message || 'No se pudieron obtener insights.'}`, true);
+                    addMessageToChat('system', `Error: ${result.message || 'Error desconocido en IA'}`, true);
                 }
             } catch (error) {
+                console.error(error);
                 document.getElementById(loadingId).remove();
                 addMessageToChat('system', 'Error de conexión con HUMO Brain.', true);
             } finally {
@@ -362,10 +372,10 @@
             addMessageToChat('system', html);
         }
 
-        // --- 4. LIVE FEED SIMULADO (Decorativo por ahora) ---
+        // --- 4. LIVE FEED (Simulación Visual) ---
         function addLiveEvent() {
             const container = document.getElementById('live-feed');
-            const types = ['click_nav', 'view_promo', 'login', 'api_check'];
+            const types = ['click_nav', 'view_promo', 'login', 'api_check', 'db_sync'];
             const type = types[Math.floor(Math.random() * types.length)];
             const div = document.createElement('div');
             div.className = "text-gray-400 border-l border-white/10 pl-2 animate-fade-in";
@@ -379,8 +389,7 @@
         fetchUsers();
         fetchStats();
         addLiveEvent();
-        // Auto-refresh stats cada 30s
-        setInterval(fetchStats, 30000);
+        setInterval(fetchStats, 30000); // Refrescar stats cada 30s
 
     </script>
 </body>
