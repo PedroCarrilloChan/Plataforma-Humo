@@ -245,7 +245,8 @@
 
         // --- CONFIGURACIÓN DE APIS REALES ---
         const API_URL = "https://humo-api.smartpasses.workers.dev";
-        const BRAIN_URL = "https://worker-ai.smartpasses.workers.dev";
+        // URL CORREGIDA:
+        const BRAIN_URL = "https://worker-ai.smartpasses.workers.dev"; 
         
         let selectedUserId = null;
 
@@ -355,7 +356,7 @@
             } catch (error) {
                 console.error(error);
                 document.getElementById(loadingId).remove();
-                addMessageToChat('system', 'Error de conexión con HUMO Brain.', true);
+                addMessageToChat('system', 'Error de conexión con HUMO Brain (worker-ai).', true);
             } finally {
                 input.disabled = false;
                 input.focus();
@@ -447,4 +448,3 @@
     </script>
 </body>
 </html>
-
