@@ -203,9 +203,9 @@
 
     <!-- Menú Móvil (Hidden by default) -->
     <div id="mobile-menu" class="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl flex flex-col justify-center items-center md:hidden pt-20 pb-10 px-8 space-y-8">
-        <a href="#benefits" onclick="toggleMobileMenu()" class="text-2xl font-light text-white tracking-widest hover:text-emerald-500 transition">BENEFICIOS</a>
-        <a href="#" onclick="toggleMobileMenu()" class="text-2xl font-light text-white tracking-widest hover:text-emerald-500 transition">CLUBES</a>
-        <a href="#" onclick="toggleMobileMenu()" class="text-2xl font-light text-white tracking-widest hover:text-emerald-500 transition">TECNOLOGÍA</a>
+        <a href="#benefits" onclick="toggleMobileMenu(); trackEvent('click_menu', 'beneficios')" class="text-2xl font-light text-white tracking-widest hover:text-emerald-500 transition">BENEFICIOS</a>
+        <a href="#" onclick="toggleMobileMenu(); trackEvent('click_menu', 'clubes')" class="text-2xl font-light text-white tracking-widest hover:text-emerald-500 transition">CLUBES</a>
+        <a href="#" onclick="toggleMobileMenu(); trackEvent('click_menu', 'tecnologia')" class="text-2xl font-light text-white tracking-widest hover:text-emerald-500 transition">TECNOLOGÍA</a>
         <button onclick="toggleMobileMenu(); openRegistration()" class="mt-8 px-10 py-4 rounded-full border border-emerald-500 text-emerald-500 font-bold uppercase tracking-widest">
             Registrarme
         </button>
@@ -224,9 +224,9 @@
             
             <!-- Desktop Nav -->
             <div class="hidden md:flex space-x-8 text-sm uppercase tracking-widest text-gray-400">
-                <a href="#benefits" class="hover:text-emerald-400 transition hover:glow">Beneficios</a>
-                <a href="#" class="hover:text-emerald-400 transition hover:glow">Clubes</a>
-                <a href="#" class="hover:text-emerald-400 transition hover:glow">Tecnología</a>
+                <a href="#benefits" onclick="trackEvent('click_nav', 'beneficios')" class="hover:text-emerald-400 transition hover:glow">Beneficios</a>
+                <a href="#" onclick="trackEvent('click_nav', 'clubes')" class="hover:text-emerald-400 transition hover:glow">Clubes</a>
+                <a href="#" onclick="trackEvent('click_nav', 'tecnologia')" class="hover:text-emerald-400 transition hover:glow">Tecnología</a>
             </div>
 
             <!-- Mobile Hamburger -->
@@ -257,7 +257,7 @@
                 <button onclick="openRegistration()" class="btn-primary w-full md:w-auto px-10 py-4 rounded-full font-bold text-black uppercase tracking-widest text-xs md:text-sm">
                     Registrarme Gratis
                 </button>
-                <a href="#benefits" class="w-full md:w-auto px-10 py-4 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm font-bold uppercase tracking-widest text-xs md:text-sm hover:bg-white/10 transition hover:border-white/30 flex items-center justify-center text-white">
+                <a href="#benefits" onclick="trackEvent('click_hero', 'ver_beneficios')" class="w-full md:w-auto px-10 py-4 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm font-bold uppercase tracking-widest text-xs md:text-sm hover:bg-white/10 transition hover:border-white/30 flex items-center justify-center text-white">
                     Ver Beneficios
                 </a>
             </div>
@@ -439,6 +439,9 @@
         const successMessage = document.getElementById('success-message');
         const mobileMenu = document.getElementById('mobile-menu');
 
+        // URL del Worker (Asegúrate que coincida con la que pusiste)
+        const WORKER_URL = "https://humo-api.smartpasses.workers.dev";
+
         function toggleMobileMenu() {
             mobileMenu.classList.toggle('open');
             // Prevent scrolling on body when menu is open
@@ -476,6 +479,20 @@
             }, 400);
         }
 
+        // --- SISTEMA DE TRACKING ---
+        async function trackEvent(tipo, detalle) {
+            try {
+                // Envio sin bloquear la navegación ("fire and forget")
+                fetch(`${WORKER_URL}/track`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tipo, detalle })
+                }).catch(err => console.log('Track error silencioso', err));
+            } catch (e) {
+                // Ignorar errores de tracking para no afectar UX
+            }
+        }
+
         async function handleSubmit(event) {
             event.preventDefault();
             
@@ -492,11 +509,6 @@
             btn.disabled = true;
 
             try {
-                // 3. Enviar al Backend (Worker Independiente)
-                // IMPORTANTE: REEMPLAZA LA SIGUIENTE LÍNEA CON TU URL REAL DE CLOUDFLARE WORKERS
-                // Ejemplo: const WORKER_URL = "https://humo-api.tusuario.workers.dev";
-                const WORKER_URL = "https://humo-api.smartpasses.workers.dev"; 
-                
                 const response = await fetch(`${WORKER_URL}/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -509,6 +521,9 @@
                     // Éxito: Mostrar pantalla de bienvenida
                     form.classList.add('hidden');
                     successMessage.classList.remove('hidden');
+                    
+                    // Nota: El worker ya guarda el evento 'registro' automáticamente, 
+                    // así que no necesitamos llamar a trackEvent aquí manualmente.
                 } else {
                     // Error del servidor (ej. correo duplicado)
                     alert(result.error || "Hubo un error al procesar tu solicitud. Intenta nuevamente.");
