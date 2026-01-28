@@ -2,80 +2,35 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HUMO - Tecnología para una nueva forma de pertenecer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUMO Lab | Console</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Iconos -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js para gráficas profesionales -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #020202; /* Negro más profundo */
-            color: #ffffff;
-            overflow-x: hidden;
-            margin: 0;
-            -webkit-tap-highlight-color: transparent;
+            background-color: #020202;
+            color: #e5e5e5;
+            overflow: hidden;
         }
+
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
 
         /* --- Fondo Inmersivo --- */
         .immersive-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-            overflow: hidden;
-            background: #020202;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; overflow: hidden; background: #020202;
         }
 
-        /* Orbes de luz ambiental */
         .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px); /* Blur reducido ligeramente para rendimiento móvil */
-            opacity: 0.5;
-            animation: float 25s infinite ease-in-out;
-            will-change: transform;
+            position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; animation: float 25s infinite ease-in-out; will-change: transform;
         }
-
-        @media (min-width: 768px) {
-            .orb { filter: blur(100px); }
-        }
-
-        .orb-1 {
-            top: -10%;
-            right: -10%;
-            width: 70vw; /* Más grande en móvil para cubrir mejor */
-            height: 70vw;
-            background: radial-gradient(circle, #10b981 0%, transparent 70%); /* Emerald principal */
-            animation-delay: 0s;
-        }
-
-        .orb-2 {
-            bottom: -10%;
-            left: -20%;
-            width: 80vw;
-            height: 80vw;
-            background: radial-gradient(circle, #064e3b 0%, transparent 70%); /* Emerald oscuro */
-            animation-delay: -8s;
-            opacity: 0.3;
-        }
-
-        .orb-3 {
-            top: 40%;
-            left: 20%;
-            width: 50vw;
-            height: 50vw;
-            background: radial-gradient(circle, #047857 0%, transparent 70%);
-            opacity: 0.15;
-            animation-delay: -15s;
-        }
-
-        @media (min-width: 768px) {
-            .orb-1 { width: 50vw; height: 50vw; top: -15%; right: -10%; }
-            .orb-2 { width: 60vw; height: 60vw; bottom: -20%; left: -10%; }
-            .orb-3 { width: 40vw; height: 40vw; top: 40%; left: 30%; }
-        }
+        .orb-1 { top: -15%; right: -10%; width: 50vw; height: 50vw; background: radial-gradient(circle, #10b981 0%, transparent 70%); animation-delay: 0s; }
+        .orb-2 { bottom: -20%; left: -10%; width: 60vw; height: 60vw; background: radial-gradient(circle, #064e3b 0%, transparent 70%); animation-delay: -8s; opacity: 0.25; }
+        .orb-3 { top: 40%; left: 30%; width: 40vw; height: 40vw; background: radial-gradient(circle, #047857 0%, transparent 70%); opacity: 0.15; animation-delay: -15s; }
 
         @keyframes float {
             0%, 100% { transform: translate(0, 0) scale(1); }
@@ -85,115 +40,50 @@
 
         /* Grid Tecnológico */
         .tech-grid {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            position: fixed; inset: 0; z-index: -1;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
             background-size: 50px 50px;
             mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
             -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
             pointer-events: none;
         }
 
-        /* --- Componentes UI --- */
-        .glass-card {
-            background: rgba(10, 10, 10, 0.6);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-        }
+        /* Scrollbars */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.2); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #10b981; }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            transition: all 0.3s ease;
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
-            border: none;
-            cursor: pointer;
-        }
+        /* Estilos Glass & Paneles */
+        .glass-panel { background: rgba(10, 10, 10, 0.4); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); transition: border-color 0.3s ease; }
+        .side-panel { background: rgba(5, 5, 5, 0.3); backdrop-filter: blur(10px); }
+        .glass-input { background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981; }
+        .glass-input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 30px rgba(16, 185, 129, 0.5);
-        }
+        /* HUD Corners & Effects */
+        .active-terminal { box-shadow: 0 0 40px rgba(16, 185, 129, 0.05); animation: border-breathe 4s infinite ease-in-out; }
+        @keyframes border-breathe { 0%, 100% { border-color: rgba(255, 255, 255, 0.08); } 50% { border-color: rgba(16, 185, 129, 0.3); } }
 
-        .btn-primary:active {
-            transform: scale(0.98);
-        }
-        
-        .btn-primary:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
+        .hud-corner { position: absolute; width: 15px; height: 15px; border-color: rgba(16, 185, 129, 0.6); border-style: solid; pointer-events: none; z-index: 20; }
+        .hud-tl { top: 0; left: 0; border-width: 2px 0 0 2px; border-radius: 4px 0 0 0; }
+        .hud-tr { top: 0; right: 0; border-width: 2px 2px 0 0; border-radius: 0 4px 0 0; }
+        .hud-bl { bottom: 0; left: 0; border-width: 0 0 2px 2px; border-radius: 0 0 0 4px; }
+        .hud-br { bottom: 0; right: 0; border-width: 0 2px 2px 0; border-radius: 0 0 4px 0; }
 
-        /* Animación Overlay */
-        #registration-overlay {
-            display: none;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
+        .core-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60%; height: 60%; background: radial-gradient(circle, rgba(16, 185, 129, 0.03) 0%, transparent 70%); pointer-events: none; z-index: 0; animation: glow-pulse 6s infinite alternate; }
+        @keyframes glow-pulse { 0% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.9); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } }
 
-        #registration-overlay.active {
-            display: flex;
-            opacity: 1;
-        }
+        .animate-fade-in { animation: fadeIn 0.3s ease-in forwards; opacity: 0; }
+        @keyframes fadeIn { to { opacity: 1; } }
 
-        .blur-target {
-            transition: filter 0.4s ease, transform 0.4s ease;
-        }
-
-        .blur-target.active {
-            filter: blur(12px);
-            transform: scale(0.98);
-        }
-
-        /* Mobile Menu */
-        #mobile-menu {
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: translateY(-100%);
-        }
-        
-        #mobile-menu.open {
-            transform: translateY(0);
-        }
-
-        /* Inputs Modernos */
-        input {
-            background: rgba(255, 255, 255, 0.03) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            color: white !important;
-            transition: all 0.3s ease;
-            -webkit-appearance: none; /* Eliminar estilos por defecto en iOS */
-        }
-
-        input:focus {
-            background: rgba(255, 255, 255, 0.08) !important;
-            border-color: #10b981 !important;
-            outline: none;
-            box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.2);
-        }
-        
-        /* Animación para scroll suave */
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Utility: Hide scrollbar for clean modal look but allow scroll */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        /* Toggle Switch */
+        .view-btn.active { background-color: rgba(16, 185, 129, 0.2); color: #10b981; border-color: #10b981; }
+        .view-btn { border: 1px solid transparent; }
     </style>
 </head>
-<body>
+<body class="h-screen flex flex-col">
 
-    <!-- Fondo Inmersivo -->
+    <!-- Fondo -->
     <div class="immersive-bg">
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
@@ -201,351 +91,391 @@
         <div class="tech-grid"></div>
     </div>
 
-    <!-- Menú Móvil (Hidden by default) -->
-    <div id="mobile-menu" class="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl flex flex-col justify-center items-center md:hidden pt-20 pb-10 px-8 space-y-8">
-        <a href="#benefits" onclick="toggleMobileMenu(); trackEvent('click_menu', 'beneficios')" class="text-2xl font-light text-white tracking-widest hover:text-emerald-500 transition">BENEFICIOS</a>
-        <a href="#" onclick="toggleMobileMenu(); trackEvent('click_menu', 'clubes')" class="text-2xl font-light text-white tracking-widest hover:text-emerald-500 transition">CLUBES</a>
-        <a href="#" onclick="toggleMobileMenu(); trackEvent('click_menu', 'tecnologia')" class="text-2xl font-light text-white tracking-widest hover:text-emerald-500 transition">TECNOLOGÍA</a>
-        <button onclick="toggleMobileMenu(); openRegistration()" class="mt-8 px-10 py-4 rounded-full border border-emerald-500 text-emerald-500 font-bold uppercase tracking-widest">
-            Registrarme
-        </button>
-        <!-- Close Button -->
-        <button onclick="toggleMobileMenu()" class="absolute top-8 right-8 text-gray-400">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-    </div>
-
-    <!-- Contenido Principal -->
-    <div id="main-content" class="blur-target relative z-10 min-h-screen flex flex-col justify-between">
+    <!-- Header -->
+    <header class="h-16 border-b border-white/10 flex items-center justify-between px-6 bg-black/40 backdrop-blur-md z-50">
+        <div class="flex items-center gap-3">
+            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+            <h1 class="font-bold tracking-[0.2em] text-lg">HUMO <span class="text-emerald-500 font-normal opacity-80">LAB CONSOLE</span></h1>
+        </div>
         
-        <!-- Navegación -->
-        <nav class="flex justify-between items-center p-6 md:p-8 max-w-7xl mx-auto w-full relative z-50">
-            <div class="text-xl md:text-2xl font-bold tracking-widest text-white relative z-50">HUMO</div>
-            
-            <!-- Desktop Nav -->
-            <div class="hidden md:flex space-x-8 text-sm uppercase tracking-widest text-gray-400">
-                <a href="#benefits" onclick="trackEvent('click_nav', 'beneficios')" class="hover:text-emerald-400 transition hover:glow">Beneficios</a>
-                <a href="#" onclick="trackEvent('click_nav', 'clubes')" class="hover:text-emerald-400 transition hover:glow">Clubes</a>
-                <a href="#" onclick="trackEvent('click_nav', 'tecnologia')" class="hover:text-emerald-400 transition hover:glow">Tecnología</a>
+        <!-- KPIs Rápidos Header -->
+        <div class="hidden md:flex items-center gap-8 text-xs font-mono">
+            <div class="flex flex-col items-end">
+                <span class="text-gray-500 text-[10px] uppercase">Active Users</span>
+                <span class="text-emerald-400 font-bold text-lg leading-none" id="stat-users">--</span>
             </div>
-
-            <!-- Mobile Hamburger -->
-            <button class="md:hidden text-white p-2 relative z-50 focus:outline-none" onclick="toggleMobileMenu()">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-            </button>
-        </nav>
-
-        <!-- Hero Section -->
-        <main class="max-w-7xl mx-auto px-6 md:px-8 py-10 flex flex-col items-center text-center flex-grow justify-center">
-            
-            <div class="inline-block px-4 py-1 border border-emerald-500/30 bg-emerald-500/5 rounded-full text-emerald-400 text-[10px] font-bold mb-8 uppercase tracking-[0.2em] animate-pulse">
-                Fase 3: Lanzamiento
+            <div class="flex flex-col items-end">
+                <span class="text-gray-500 text-[10px] uppercase">System Events</span>
+                <span class="text-white font-bold text-lg leading-none" id="stat-events">--</span>
             </div>
-            
-            <h1 class="text-4xl sm:text-5xl md:text-8xl font-bold mb-8 tracking-tighter leading-[1.1] md:leading-none bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-500">
-                Tecnología para <br>
-                <span class="text-emerald-500 bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-emerald-600">una nueva forma</span><br>
-                de pertenecer.
-            </h1>
-            
-            <p class="text-gray-400 text-base md:text-xl max-w-2xl mb-12 leading-relaxed font-light px-4">
-                Infraestructura digital para el ecosistema cannábico. <br class="hidden md:block">
-                Membresías, comunicación y lealtad sin fricción.
-            </p>
-
-            <div class="flex flex-col w-full md:w-auto md:flex-row space-y-4 md:space-y-0 md:space-x-6 z-20 px-4">
-                <button onclick="openRegistration()" class="btn-primary w-full md:w-auto px-10 py-4 rounded-full font-bold text-black uppercase tracking-widest text-xs md:text-sm">
-                    Registrarme Gratis
-                </button>
-                <a href="#benefits" onclick="trackEvent('click_hero', 'ver_beneficios')" class="w-full md:w-auto px-10 py-4 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm font-bold uppercase tracking-widest text-xs md:text-sm hover:bg-white/10 transition hover:border-white/30 flex items-center justify-center text-white">
-                    Ver Beneficios
-                </a>
-            </div>
-
-            <!-- Previsualización de Niveles Minimalista -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 md:mt-24 w-full max-w-5xl text-left">
-                <div class="glass-card p-6 rounded-2xl hover:bg-white/5 transition group cursor-default">
-                    <div class="flex items-center space-x-3 mb-3">
-                        <div class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_#34d399]"></div>
-                        <h3 class="text-sm font-bold uppercase tracking-widest text-gray-200">HUMO Free</h3>
-                    </div>
-                    <p class="text-gray-500 text-xs leading-relaxed group-hover:text-gray-300 transition">Tu puerta de entrada. Identidad verificada en tu wallet.</p>
-                </div>
-                
-                <div class="glass-card p-6 rounded-2xl border-emerald-500/30 hover:border-emerald-500/50 transition group cursor-default relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-16 h-16 bg-emerald-500/10 rounded-bl-full -mr-4 -mt-4"></div>
-                    <div class="flex items-center space-x-3 mb-3">
-                        <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]"></div>
-                        <h3 class="text-sm font-bold uppercase tracking-widest text-white">Cultiva Pro</h3>
-                    </div>
-                    <p class="text-gray-500 text-xs leading-relaxed group-hover:text-gray-300 transition">IA 24/7 y expertos para aprendizaje real.</p>
-                </div>
-
-                <div class="glass-card p-6 rounded-2xl hover:bg-white/5 transition group cursor-default">
-                    <div class="flex items-center space-x-3 mb-3">
-                        <div class="w-2 h-2 rounded-full bg-gray-500"></div>
-                        <h3 class="text-sm font-bold uppercase tracking-widest text-gray-200">Club Elite</h3>
-                    </div>
-                    <p class="text-gray-500 text-xs leading-relaxed group-hover:text-gray-300 transition">Infraestructura B2B para lealtad y retención.</p>
-                </div>
-            </div>
-
-            <!-- NUEVA SECCIÓN: Beneficios HUMO Free -->
-            <section id="benefits" class="w-full max-w-6xl mt-24 md:mt-40 mb-20 relative z-20 scroll-mt-24">
-                <div class="text-center mb-12 md:mb-16 px-4">
-                    <div class="inline-block px-3 py-1 mb-4 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-emerald-400 text-[10px] uppercase tracking-[0.2em] font-bold">
-                        ¿Por qué descargar?
-                    </div>
-                    <h2 class="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-emerald-100 to-emerald-400">
-                        Tu Pase de Acceso al Ecosistema
-                    </h2>
-                    <p class="text-gray-400 text-sm md:text-base max-w-2xl mx-auto font-light leading-relaxed">
-                        HUMO Free no es solo un registro. Es tu identidad digital verificada que desbloquea un mundo de experiencias, conocimiento y comunidad sin costo alguno.
-                    </p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 text-left px-2">
-                    <!-- Benefit 1 -->
-                    <div class="glass-card p-6 md:p-8 rounded-2xl hover:border-emerald-500/30 transition duration-300 group hover:-translate-y-1">
-                        <div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4 md:mb-6 group-hover:bg-emerald-500/20 transition duration-300 border border-emerald-500/10">
-                            <svg class="w-5 h-5 md:w-6 md:h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                        </div>
-                        <h3 class="text-base md:text-lg font-bold mb-2 md:mb-3 text-white">Wallet Ready</h3>
-                        <p class="text-gray-500 text-xs leading-relaxed">Tu identidad vive en tu Wallet (Apple/Google). Sin apps pesadas, solo un pase digital seguro que evoluciona contigo.</p>
-                    </div>
-
-                    <!-- Benefit 2 -->
-                    <div class="glass-card p-6 md:p-8 rounded-2xl hover:border-emerald-500/30 transition duration-300 group hover:-translate-y-1">
-                        <div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4 md:mb-6 group-hover:bg-emerald-500/20 transition duration-300 border border-emerald-500/10">
-                            <svg class="w-5 h-5 md:w-6 md:h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                        </div>
-                        <h3 class="text-base md:text-lg font-bold mb-2 md:mb-3 text-white">Alertas Exclusivas</h3>
-                        <p class="text-gray-500 text-xs leading-relaxed">Entérate antes que nadie de eventos secretos, catas privadas y agenda cultural a través de notificaciones push directas.</p>
-                    </div>
-
-                    <!-- Benefit 3 -->
-                    <div class="glass-card p-6 md:p-8 rounded-2xl hover:border-emerald-500/30 transition duration-300 group hover:-translate-y-1">
-                        <div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4 md:mb-6 group-hover:bg-emerald-500/20 transition duration-300 border border-emerald-500/10">
-                            <svg class="w-5 h-5 md:w-6 md:h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                        </div>
-                        <h3 class="text-base md:text-lg font-bold mb-2 md:mb-3 text-white">Comunidad HUMO</h3>
-                        <p class="text-gray-500 text-xs leading-relaxed">Acceso a foros abiertos y red de miembros. Conecta con otros apasionados del ecosistema en un entorno seguro.</p>
-                    </div>
-
-                    <!-- Benefit 4 -->
-                    <div class="glass-card p-6 md:p-8 rounded-2xl hover:border-emerald-500/30 transition duration-300 group hover:-translate-y-1">
-                        <div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4 md:mb-6 group-hover:bg-emerald-500/20 transition duration-300 border border-emerald-500/10">
-                            <svg class="w-5 h-5 md:w-6 md:h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                        </div>
-                        <h3 class="text-base md:text-lg font-bold mb-2 md:mb-3 text-white">Acceso a Tienda</h3>
-                        <p class="text-gray-500 text-xs leading-relaxed">Navegación completa en nuestro catálogo web. Desbloquea descuentos básicos solo por ser miembro registrado.</p>
-                    </div>
-
-                    <!-- Benefit 5 -->
-                    <div class="glass-card p-6 md:p-8 rounded-2xl hover:border-emerald-500/30 transition duration-300 group hover:-translate-y-1">
-                        <div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4 md:mb-6 group-hover:bg-emerald-500/20 transition duration-300 border border-emerald-500/10">
-                            <svg class="w-5 h-5 md:w-6 md:h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                        </div>
-                        <h3 class="text-base md:text-lg font-bold mb-2 md:mb-3 text-white">Contenido Curado</h3>
-                        <p class="text-gray-500 text-xs leading-relaxed">Recibe guías de inicio y tips de cultivo de nuestros expertos "Cultiva" y "Mesa & Jardín". Educación responsable.</p>
-                    </div>
-
-                    <!-- CTA Card -->
-                    <div class="glass-card p-6 md:p-8 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 flex flex-col justify-center items-center text-center group cursor-pointer hover:bg-emerald-500/10 transition duration-300 hover:shadow-[0_0_30px_rgba(16,185,129,0.1)]" onclick="openRegistration()">
-                        <div class="w-12 h-12 md:w-16 md:h-16 bg-emerald-500 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition duration-300 shadow-[0_0_20px_rgba(16,185,129,0.4)]">
-                            <svg class="w-6 h-6 md:w-8 md:h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
-                        </div>
-                        <h3 class="text-lg md:text-xl font-bold mb-2 text-white">Únete Ahora</h3>
-                        <p class="text-emerald-400 text-[10px] md:text-xs font-bold uppercase tracking-widest mb-0 group-hover:text-emerald-300">Totalmente Gratis</p>
-                    </div>
-                </div>
-            </section>
-
-        </main>
-
-        <footer class="p-8 text-center text-gray-700 text-[10px] tracking-[0.2em] uppercase">
-            &copy; 2026 HUMO Inc.
-        </footer>
-    </div>
-
-    <!-- Overlay de Registro (Responsive & Scrollable) -->
-    <div id="registration-overlay" class="fixed inset-0 z-[60] justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto items-start md:items-center">
-        <!-- Contenedor Wrapper para centrado vertical en pantallas altas, y scroll en bajas -->
-        <div class="w-full min-h-full flex items-center justify-center py-8">
-            <div class="glass-card w-full max-w-lg rounded-3xl p-6 md:p-10 relative border-emerald-500/20 shadow-[0_0_50px_rgba(16,185,129,0.1)]">
-                <button onclick="closeRegistration()" class="absolute top-4 right-4 md:top-6 md:right-6 text-gray-500 hover:text-white transition transform hover:rotate-90 duration-300 z-10 p-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-
-                <div class="mb-6 md:mb-8">
-                    <div class="w-12 h-1 bg-emerald-500 mb-4 md:mb-6 rounded-full"></div>
-                    <h2 class="text-2xl md:text-3xl font-bold mb-2 tracking-tight text-white">Únete a HUMO</h2>
-                    <p class="text-gray-400 text-sm">Descarga tu pase digital y accede al ecosistema.</p>
-                </div>
-
-                <form id="free-register-form" onsubmit="handleSubmit(event)" class="space-y-4 md:space-y-5">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-[10px] uppercase tracking-widest text-gray-500 mb-2 font-bold">Nombre</label>
-                            <input type="text" id="input-nombre" required class="w-full px-4 py-3 rounded-xl text-sm" placeholder="Ej. Sergio">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] uppercase tracking-widest text-gray-500 mb-2 font-bold">Apellido</label>
-                            <input type="text" id="input-apellido" required class="w-full px-4 py-3 rounded-xl text-sm" placeholder="Ej. González">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-[10px] uppercase tracking-widest text-gray-500 mb-2 font-bold">Teléfono Móvil</label>
-                        <input type="tel" id="input-telefono" required class="w-full px-4 py-3 rounded-xl text-sm" placeholder="+57 300 000 0000">
-                    </div>
-
-                    <div>
-                        <label class="block text-[10px] uppercase tracking-widest text-gray-500 mb-2 font-bold">Correo Electrónico</label>
-                        <input type="email" id="input-email" required class="w-full px-4 py-3 rounded-xl text-sm" placeholder="tu@email.com">
-                    </div>
-
-                    <div class="pt-4">
-                        <button type="submit" id="btn-submit" class="btn-primary w-full py-4 rounded-xl font-bold text-black uppercase tracking-widest text-xs hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] transition duration-300">
-                            Generar Pase Digital
-                        </button>
-                    </div>
-
-                    <p class="text-[9px] text-gray-600 text-center leading-relaxed mt-4">
-                        Al continuar, confirmas que eres mayor de 18 años. HUMO no comercializa cannabis, somos una plataforma tecnológica de lealtad y educación.
-                    </p>
-                </form>
-
-                <!-- Mensaje de éxito -->
-                <div id="success-message" class="hidden text-center py-10">
-                    <div class="w-20 h-20 md:w-24 md:h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20 relative">
-                        <div class="absolute inset-0 bg-emerald-500/20 rounded-full animate-ping opacity-20"></div>
-                        <svg class="w-8 h-8 md:w-10 md:h-10 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                    </div>
-                    <h2 class="text-xl md:text-2xl font-bold mb-2 text-white">¡Bienvenido!</h2>
-                    <p class="text-gray-400 mb-8 text-xs md:text-sm">Tu pase digital ha sido enviado a tu correo.<br>Revisa tu bandeja de entrada.</p>
-                    <button onclick="closeRegistration()" class="px-8 py-3 rounded-full border border-white/10 font-bold uppercase tracking-widest hover:bg-white/5 text-xs transition text-white">
-                        Volver al inicio
-                    </button>
-                </div>
+            <div class="h-8 w-px bg-white/10 mx-2"></div>
+            <div class="flex flex-col items-end">
+                <span class="text-gray-500 text-[10px] uppercase">AI Status</span>
+                <span class="text-emerald-500 font-bold">ONLINE</span>
             </div>
         </div>
-    </div>
+    </header>
+
+    <!-- Main Grid -->
+    <main class="flex-1 grid grid-cols-12 gap-0 overflow-hidden relative z-10">
+        
+        <!-- Panel Izquierdo: Data Lake -->
+        <aside class="col-span-3 border-r border-white/5 side-panel flex flex-col">
+            <div class="p-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
+                <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400 flex items-center gap-2">
+                    <i data-lucide="database" class="w-4 h-4"></i> Data Lake
+                </h2>
+                <button onclick="fetchUsers()" class="text-gray-500 hover:text-white"><i data-lucide="refresh-cw" class="w-3 h-3"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-2 space-y-2 relative" id="user-list">
+                <div class="absolute inset-0 flex items-center justify-center text-emerald-500/50"><i data-lucide="loader-2" class="w-6 h-6 animate-spin"></i></div>
+            </div>
+        </aside>
+
+        <!-- Panel Central: Núcleo (Multi-View) -->
+        <section class="col-span-6 flex flex-col relative glass-panel active-terminal mx-2 my-2 rounded-xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+            <!-- HUD Decorativo -->
+            <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div><div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
+            <div class="core-glow"></div>
+
+            <!-- Toolbar Central -->
+            <div class="absolute top-4 left-0 right-0 flex justify-center gap-2 z-20">
+                <button onclick="switchView('chat')" id="btn-chat" class="view-btn active px-4 py-1 rounded-full text-[10px] uppercase tracking-widest font-bold text-gray-400 bg-black/50 hover:text-white transition flex items-center gap-2">
+                    <i data-lucide="message-square" class="w-3 h-3"></i> AI Chat
+                </button>
+                <button onclick="switchView('metrics')" id="btn-metrics" class="view-btn px-4 py-1 rounded-full text-[10px] uppercase tracking-widest font-bold text-gray-400 bg-black/50 hover:text-white transition flex items-center gap-2">
+                    <i data-lucide="bar-chart-2" class="w-3 h-3"></i> War Room
+                </button>
+            </div>
+            
+            <!-- VISTA 1: Chat IA -->
+            <div id="view-chat" class="flex flex-col h-full pt-12 relative z-10 transition-opacity duration-300">
+                <div class="flex-1 overflow-y-auto p-6 space-y-6" id="chat-history">
+                    <div class="flex gap-4 items-start animate-fade-in">
+                        <div class="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                            <i data-lucide="brain-circuit" class="w-5 h-5 text-emerald-500"></i>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="text-[10px] text-emerald-500 font-mono uppercase">System Core</div>
+                            <div class="text-sm text-gray-300 leading-relaxed max-w-lg">
+                                Sistema operativo. Selecciona un usuario o escribe un comando.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 bg-black/40 border-t border-white/5">
+                    <form id="ai-form" class="flex gap-3" onsubmit="handleAiSubmit(event)">
+                        <input type="text" id="ai-input" class="glass-input w-full px-4 py-3 rounded-lg font-mono text-sm placeholder-emerald-900/50" placeholder="Comando o ID..." autocomplete="off">
+                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-black font-bold px-6 py-2 rounded-lg transition"><i data-lucide="send" class="w-4 h-4"></i></button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- VISTA 2: Gráficas (War Room) -->
+            <div id="view-metrics" class="hidden h-full pt-16 p-6 relative z-10 grid grid-cols-2 gap-4 overflow-y-auto">
+                <!-- Gráfica 1: Tráfico -->
+                <div class="col-span-2 bg-black/40 border border-white/10 rounded-xl p-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xs text-emerald-400 font-bold uppercase tracking-widest">Actividad de Red (Tiempo Real)</h3>
+                        <div class="flex items-center gap-2"><div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div><span class="text-[10px] text-gray-500">LIVE</span></div>
+                    </div>
+                    <div class="h-40 w-full"><canvas id="trafficChart"></canvas></div>
+                </div>
+
+                <!-- Gráfica 2: Niveles -->
+                <div class="bg-black/40 border border-white/10 rounded-xl p-4">
+                    <h3 class="text-xs text-emerald-400 font-bold uppercase tracking-widest mb-4">Distribución de Niveles</h3>
+                    <div class="h-32 w-full flex justify-center"><canvas id="levelChart"></canvas></div>
+                </div>
+
+                <!-- Gráfica 3: Arquetipos -->
+                <div class="bg-black/40 border border-white/10 rounded-xl p-4">
+                    <h3 class="text-xs text-emerald-400 font-bold uppercase tracking-widest mb-4">Radar de Arquetipos</h3>
+                    <div class="h-32 w-full flex justify-center"><canvas id="radarChart"></canvas></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Panel Derecho: Live Feed -->
+        <aside class="col-span-3 border-l border-white/5 side-panel flex flex-col">
+            <div class="p-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
+                <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400 flex items-center gap-2">
+                    <i data-lucide="activity" class="w-4 h-4"></i> Live Feed
+                </h2>
+                <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+            </div>
+            <div class="flex-1 overflow-y-auto p-4 font-mono text-[10px] space-y-3" id="live-feed">
+                <!-- Feed dinámico -->
+            </div>
+        </aside>
+    </main>
 
     <script>
-        const overlay = document.getElementById('registration-overlay');
-        const mainContent = document.getElementById('main-content');
-        const form = document.getElementById('free-register-form');
-        const successMessage = document.getElementById('success-message');
-        const mobileMenu = document.getElementById('mobile-menu');
+        lucide.createIcons();
 
-        // URL del Worker (Asegúrate que coincida con la que pusiste)
-        const WORKER_URL = "https://humo-api.smartpasses.workers.dev";
+        // --- CONFIGURACIÓN ---
+        const API_URL = "https://humo-api.smartpasses.workers.dev";
+        const BRAIN_URL = "https://worker-ai.smartpasses.workers.dev";
+        
+        let selectedUserId = null;
+        let charts = {}; // Guardar instancias de gráficas
 
-        function toggleMobileMenu() {
-            mobileMenu.classList.toggle('open');
-            // Prevent scrolling on body when menu is open
-            if (mobileMenu.classList.contains('open')) {
-                document.body.style.overflow = 'hidden';
+        // --- UI SWITCHER ---
+        function switchView(view) {
+            const chatView = document.getElementById('view-chat');
+            const metricsView = document.getElementById('view-metrics');
+            const btnChat = document.getElementById('btn-chat');
+            const btnMetrics = document.getElementById('btn-metrics');
+
+            if (view === 'chat') {
+                chatView.classList.remove('hidden');
+                metricsView.classList.add('hidden');
+                btnChat.classList.add('active');
+                btnMetrics.classList.remove('active');
             } else {
-                document.body.style.overflow = '';
+                chatView.classList.add('hidden');
+                metricsView.classList.remove('hidden');
+                btnChat.classList.remove('active');
+                btnMetrics.classList.add('active');
+                initCharts(); // Renderizar gráficas si no existen
             }
         }
 
-        function openRegistration() {
-            overlay.style.display = 'flex';
-            // Force reflow
-            void overlay.offsetWidth;
-            overlay.classList.add('active');
-            mainContent.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Prevent body scroll
-        }
+        // --- 1. GRÁFICAS (CHART.JS) ---
+        function initCharts() {
+            if (charts.traffic) return; // Ya inicializadas
 
-        function closeRegistration() {
-            overlay.classList.remove('active');
-            mainContent.classList.remove('active');
-            document.body.style.overflow = ''; // Restore body scroll
-            setTimeout(() => {
-                overlay.style.display = 'none';
-                form.classList.remove('hidden');
-                successMessage.classList.add('hidden');
-                form.reset();
-                // Reset button state just in case
-                const btn = document.getElementById('btn-submit');
-                if(btn) {
-                    btn.innerText = "Generar Pase Digital";
-                    btn.disabled = false;
+            // Configuración común futurista
+            Chart.defaults.color = '#6b7280';
+            Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
+            Chart.defaults.font.family = "'JetBrains Mono', monospace";
+
+            // 1. Tráfico (Line Chart)
+            const ctxTraffic = document.getElementById('trafficChart').getContext('2d');
+            const gradientTraffic = ctxTraffic.createLinearGradient(0, 0, 0, 400);
+            gradientTraffic.addColorStop(0, 'rgba(16, 185, 129, 0.2)');
+            gradientTraffic.addColorStop(1, 'rgba(16, 185, 129, 0)');
+
+            charts.traffic = new Chart(ctxTraffic, {
+                type: 'line',
+                data: {
+                    labels: ['10:00', '10:05', '10:10', '10:15', '10:20', '10:25'],
+                    datasets: [{
+                        label: 'Requests',
+                        data: [12, 19, 3, 5, 2, 3], // Dummy data inicial
+                        borderColor: '#10b981',
+                        backgroundColor: gradientTraffic,
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { grid: { display: false } }, y: { display: false } }
                 }
-            }, 400);
+            });
+
+            // 2. Niveles (Doughnut)
+            const ctxLevel = document.getElementById('levelChart').getContext('2d');
+            charts.level = new Chart(ctxLevel, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Free', 'Pro', 'Elite'],
+                    datasets: [{
+                        data: [85, 10, 5],
+                        backgroundColor: ['#34d399', '#10b981', '#064e3b'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } }
+                }
+            });
+
+            // 3. Radar Arquetipos
+            const ctxRadar = document.getElementById('radarChart').getContext('2d');
+            charts.radar = new Chart(ctxRadar, {
+                type: 'radar',
+                data: {
+                    labels: ['Curioso', 'Aspirante', 'Social', 'Elite', 'Fantasma'],
+                    datasets: [{
+                        label: 'Usuarios',
+                        data: [60, 40, 20, 10, 30],
+                        backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                        borderColor: '#10b981',
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#10b981',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            pointLabels: { color: '#9ca3af', font: { size: 9 } },
+                            ticks: { display: false }
+                        }
+                    }
+                }
+            });
         }
 
-        // --- SISTEMA DE TRACKING ---
-        async function trackEvent(tipo, detalle) {
+        // --- 2. DATOS REALES (UPDATES) ---
+        async function fetchStats() {
             try {
-                // Envio sin bloquear la navegación ("fire and forget")
-                fetch(`${WORKER_URL}/track`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ tipo, detalle })
-                }).catch(err => console.log('Track error silencioso', err));
+                const res = await fetch(`${API_URL}/stats`);
+                if(!res.ok) throw new Error('Network error');
+                const data = await res.json();
+                
+                // Actualizar Header
+                document.getElementById('stat-users').innerText = data.users || 0;
+                document.getElementById('stat-events').innerText = data.events || 0;
+
+                // Actualizar Gráficas (Simulación de tiempo real basada en datos totales)
+                if (charts.traffic) {
+                    // Simular movimiento en la gráfica de línea añadiendo un poco de aleatoriedad al total de eventos
+                    const newData = charts.traffic.data.datasets[0].data;
+                    newData.push(data.events % 10 + Math.random() * 5); // Simulación visual
+                    newData.shift();
+                    charts.traffic.update('none'); // Animación suave
+                }
+
+                // Aquí podrías actualizar los datos reales del Pie Chart si el endpoint /stats devolviera desglose por nivel
+                // Por ahora lo dejamos estático o simulado hasta mejorar el backend stats.
+
             } catch (e) {
-                // Ignorar errores de tracking para no afectar UX
+                console.error("Error stats:", e);
+                document.getElementById('stat-users').innerText = "ERR";
             }
         }
 
-        async function handleSubmit(event) {
-            event.preventDefault();
-            
-            // 1. Obtener datos de los inputs por su ID
-            const nombre = document.getElementById('input-nombre').value;
-            const apellido = document.getElementById('input-apellido').value;
-            const telefono = document.getElementById('input-telefono').value;
-            const email = document.getElementById('input-email').value;
+        // --- 3. CORE LOGIC (Usuarios y Chat - Igual que antes) ---
+        async function fetchUsers() {
+            const container = document.getElementById('user-list');
+            try {
+                const res = await fetch(`${API_URL}/users`);
+                const users = await res.json();
+                container.innerHTML = '';
+                if(users.length === 0) { container.innerHTML = '<div class="text-center text-gray-600 text-xs py-10">Sin datos</div>'; return; }
+                users.forEach(user => {
+                    const div = document.createElement('div');
+                    div.className = "p-3 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer border border-transparent hover:border-emerald-500/30 transition mb-2 animate-fade-in";
+                    div.onclick = () => selectUser(user);
+                    div.innerHTML = `
+                        <div class="flex justify-between"><span class="font-bold text-sm text-white">${user.nombre}</span><span class="text-[10px] bg-white/10 px-2 rounded text-gray-400 uppercase">${user.nivel}</span></div>
+                        <div class="text-[10px] text-gray-500 truncate">ID: ${user.id}</div>
+                    `;
+                    container.appendChild(div);
+                });
+            } catch (e) { container.innerHTML = '<div class="text-center text-red-400 text-xs mt-4">Error API</div>'; }
+        }
 
-            // 2. UI Loading (Cambiar texto del botón para feedback visual)
-            const btn = document.getElementById('btn-submit');
-            const originalText = btn.innerText;
-            btn.innerText = "Procesando...";
-            btn.disabled = true;
+        function selectUser(user) {
+            document.getElementById('ai-input').value = user.id;
+            switchView('chat'); // Forzar vista chat al seleccionar
+            selectedUserId = user.id;
+        }
+
+        async function handleAiSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('ai-input');
+            const valor = input.value.trim();
+            if (!valor) return;
+
+            const isNumber = /^\d+$/.test(valor);
+            let payload = {};
+
+            if (isNumber) {
+                payload = { userId: parseInt(valor) };
+                addMessageToChat('user', `Analizar ID: ${valor}`);
+                selectedUserId = parseInt(valor);
+            } else {
+                payload = { prompt: valor };
+                if (selectedUserId) payload.userId = selectedUserId;
+                addMessageToChat('user', valor);
+            }
+
+            input.value = '';
+            input.disabled = true;
+            const loadingId = addMessageToChat('system', '<span class="animate-pulse">Procesando...</span>');
 
             try {
-                const response = await fetch(`${WORKER_URL}/register`, {
+                const response = await fetch(BRAIN_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nombre, apellido, telefono, email })
+                    body: JSON.stringify(payload)
                 });
-
                 const result = await response.json();
+                document.getElementById(loadingId).remove();
 
-                if (response.ok) {
-                    // Éxito: Mostrar pantalla de bienvenida
-                    form.classList.add('hidden');
-                    successMessage.classList.remove('hidden');
-                    
-                    // Nota: El worker ya guarda el evento 'registro' automáticamente, 
-                    // así que no necesitamos llamar a trackEvent aquí manualmente.
+                if (result.success) {
+                    if (result.mode === 'analysis' && result.data) renderAnalysisCard(result.data);
+                    else addMessageToChat('system', result.response);
                 } else {
-                    // Error del servidor (ej. correo duplicado)
-                    alert(result.error || "Hubo un error al procesar tu solicitud. Intenta nuevamente.");
-                    btn.innerText = originalText;
-                    btn.disabled = false;
+                    addMessageToChat('system', `Error: ${result.message || 'Error desconocido'}`, true);
                 }
             } catch (error) {
-                console.error('Error de conexión:', error);
-                alert("Error de conexión. Verifica tu internet o la URL del API.");
-                btn.innerText = originalText;
-                btn.disabled = false;
+                document.getElementById(loadingId).remove();
+                addMessageToChat('system', 'Error de conexión con HUMO Brain.', true);
+            } finally {
+                input.disabled = false;
+                input.focus();
             }
         }
 
-        overlay.addEventListener('click', (e) => {
-            // Close only if clicking the background wrapper, not the card
-            if (e.target === overlay || e.target.classList.contains('py-8')) closeRegistration();
-        });
+        function addMessageToChat(role, html, isError = false) {
+            const container = document.getElementById('chat-history');
+            const div = document.createElement('div');
+            div.className = "flex gap-4 items-start animate-fade-in mb-6";
+            const icon = role === 'user' ? '<div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">👤</div>' : '<div class="w-8 h-8 rounded-full bg-emerald-900 flex items-center justify-center">🧠</div>';
+            div.innerHTML = `${icon}<div class="text-sm ${isError ? 'text-red-400' : (role === 'user' ? 'text-gray-300' : 'text-emerald-100')} leading-relaxed pt-1 whitespace-pre-wrap">${html}</div>`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            return div.id = 'msg-' + Math.random();
+        }
 
-        // INIT: Track page view on load
-        // Esta línea es la que asegura el conteo de visitas para el Dashboard de IA
-        trackEvent('view', 'landing_page_visit'); 
+        function renderAnalysisCard(data) {
+            const html = `
+                <div class="bg-black/40 border border-emerald-500/30 rounded-lg p-4 max-w-md">
+                    <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
+                        <h3 class="text-emerald-400 font-bold uppercase tracking-widest text-xs">Análisis Completado</h3>
+                    </div>
+                    <div class="mb-2"><span class="text-xs text-gray-500 uppercase">Perfil:</span> <strong class="text-white ml-2">${data.arquetipo}</strong></div>
+                    <div class="mb-4"><span class="text-xs text-gray-500 uppercase">Probabilidad:</span> <strong class="text-emerald-400 ml-2">${data.probabilidad_compra}%</strong></div>
+                    <div class="bg-emerald-500/10 p-3 rounded text-sm text-emerald-100 italic border border-emerald-500/20">"${data.mensaje_push}"</div>
+                </div>
+            `;
+            addMessageToChat('system', html);
+        }
+
+        function addLiveEvent() {
+            const container = document.getElementById('live-feed');
+            const types = ['click_nav', 'view_promo', 'login', 'db_sync'];
+            const type = types[Math.floor(Math.random() * types.length)];
+            const div = document.createElement('div');
+            div.className = "text-gray-400 border-l border-white/10 pl-2 animate-fade-in";
+            div.innerHTML = `<span class="text-emerald-600">[${new Date().toLocaleTimeString().split(' ')[0]}]</span> <span class="text-gray-500">System</span> <span class="text-yellow-500">${type}</span>`;
+            container.prepend(div);
+            if(container.children.length > 15) container.lastChild.remove();
+            setTimeout(addLiveEvent, Math.random() * 4000 + 1000);
+        }
+
+        // INIT
+        fetchUsers();
+        fetchStats();
+        addLiveEvent();
+        setInterval(fetchStats, 5000); // Actualización más rápida para ver gráficas moverse
 
     </script>
 </body>
