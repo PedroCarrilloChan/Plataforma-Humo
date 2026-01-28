@@ -114,7 +114,7 @@
                     <div class="kpi-card">
                         <div class="kpi-label">MRR Proyectado</div>
                         <div class="kpi-value text-emerald-400">$<span id="kpi-mrr">0</span></div>
-                        <div class="text-[9px] text-emerald-500/70 mt-1 flex items-center gap-1"><i data-lucide="trending-up" class="w-3 h-3"></i> +0%</div>
+                        <div class="text-[9px] text-emerald-500/70 mt-1 flex items-center gap-1"><i data-lucide="trending-up" class="w-3 h-3"></i> LIVE</div>
                     </div>
                     <div class="kpi-card">
                         <div class="kpi-label">Tasa Conversión</div>
@@ -139,7 +139,7 @@
                     <div class="col-span-2 bg-black/40 border border-white/10 rounded-xl p-3 h-48">
                         <div class="flex justify-between items-center mb-2">
                             <h3 class="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">Flujo de Adquisición</h3>
-                            <span class="text-[9px] text-gray-500 font-mono">LIVE UPDATE</span>
+                            <span class="text-[9px] text-gray-500 font-mono">24H HISTORY</span>
                         </div>
                         <div class="h-full w-full pb-4"><canvas id="trafficChart"></canvas></div>
                     </div>
@@ -204,7 +204,7 @@
             } else {
                 chatView.classList.add('hidden'); metricsView.classList.remove('hidden');
                 btnChat.classList.remove('active'); btnMetrics.classList.add('active');
-                setTimeout(initCharts, 100); // Delay para renderizado correcto
+                setTimeout(initCharts, 100); 
             }
         }
 
@@ -256,7 +256,7 @@
             charts.radar = new Chart(ctxRadar, {
                 type: 'radar',
                 data: {
-                    labels: ['Curioso', 'Pro', 'Social', 'Elite', 'Fantasma'],
+                    labels: ['Curioso', 'Aspirante', 'Social', 'Elite', 'Fantasma'],
                     datasets: [{ label: 'User Types', data: [50, 30, 20, 10, 40], backgroundColor: 'rgba(16, 185, 129, 0.2)', borderColor: '#10b981', borderWidth: 1, pointRadius: 0 }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { ticks: { display: false }, pointLabels: { color: '#6b7280', font: { size: 8 } }, grid: { color: 'rgba(255,255,255,0.05)' } } } }
@@ -274,41 +274,63 @@
             });
         }
 
-        // --- DATA UPDATES ---
-        async function fetchStats() {
+        // --- REAL DATA UPDATES ---
+        async function fetchMetrics() {
             try {
-                const res = await fetch(`${API_URL}/stats`);
+                // Call the new metrics endpoint
+                const res = await fetch(`${API_URL}/metrics`);
+                if(!res.ok) throw new Error("Metrics API Error");
                 const data = await res.json();
-                
-                // Actualizar KPIs Deck
-                document.getElementById('stat-users').innerText = data.users || 0;
-                document.getElementById('stat-events').innerText = data.events || 0;
-                
-                // Cálculos simulados para Financials (hasta tener data real)
-                const mockMRR = (data.users * 0.1 * 70) + (2 * 99); // 10% conversion est.
-                document.getElementById('kpi-mrr').innerText = Math.floor(mockMRR);
-                
-                // Update Traffic Chart (Simulación)
-                if (charts.traffic) {
-                    const newVisits = Math.floor(Math.random() * 10) + 20;
-                    const newRegs = Math.floor(Math.random() * 3) + 1;
-                    
-                    charts.traffic.data.datasets[0].data.push(newVisits);
+
+                // 1. Update KPI Cards
+                document.getElementById('kpi-mrr').innerText = data.kpis?.mrr || 0;
+                document.getElementById('kpi-conv').innerText = data.kpis?.conversion || 0;
+                document.getElementById('kpi-wallet').innerText = data.kpis?.installs || 0;
+                document.getElementById('kpi-scans').innerText = data.kpis?.scans || 0;
+
+                // 2. Update Charts
+                if (charts.traffic && data.charts?.traffic_total) {
+                    // Actualización básica de tráfico con datos reales del acumulado
+                    // (Para una gráfica de línea histórica real, el backend debería devolver array de fechas)
+                    // Por ahora, animamos la línea con el valor real más reciente.
+                    charts.traffic.data.datasets[0].data.push(data.charts.traffic_total.visits);
                     charts.traffic.data.datasets[0].data.shift();
-                    charts.traffic.data.datasets[1].data.push(newRegs);
+                    charts.traffic.data.datasets[1].data.push(data.charts.traffic_total.regs);
                     charts.traffic.data.datasets[1].data.shift();
-                    
-                    // Calculo de Conversion Rate Real-ish
-                    const rate = ((newRegs / newVisits) * 100).toFixed(1);
-                    document.getElementById('kpi-conv').innerText = rate;
-                    
                     charts.traffic.update('none');
                 }
-            } catch (e) { console.error("Stats Error", e); }
+                
+                if (charts.finance && data.charts?.financials) {
+                    charts.finance.data.datasets[0].data = data.charts.financials;
+                    charts.finance.update();
+                }
+
+                if (charts.os && data.charts?.wallet_os) {
+                    charts.os.data.datasets[0].data = data.charts.wallet_os;
+                    charts.os.update();
+                }
+
+                if (charts.radar && data.charts?.arquetipos) {
+                    charts.radar.data.datasets[0].data = data.charts.arquetipos;
+                    charts.radar.update();
+                }
+                
+                // Actualizar contadores del header también
+                fetchStatsHeader();
+
+            } catch (e) { console.error("Metrics Update Error", e); }
         }
 
-        // --- CORE FUNCTIONS (Chat & Users) ---
-        // (Mantenemos la lógica de Chat inteligente y User List de la versión anterior)
+        async function fetchStatsHeader() {
+             try {
+                const res = await fetch(`${API_URL}/stats`);
+                const data = await res.json();
+                document.getElementById('stat-users').innerText = data.users || 0;
+                document.getElementById('stat-events').innerText = data.events || 0;
+             } catch(e) {}
+        }
+
+        // --- CORE FUNCTIONS ---
         async function fetchUsers() {
             const container = document.getElementById('user-list');
             try {
@@ -384,7 +406,7 @@
         }
 
         // Init
-        fetchUsers(); fetchStats(); addLiveEvent(); setInterval(fetchStats, 5000);
+        fetchUsers(); fetchMetrics(); addLiveEvent(); setInterval(fetchMetrics, 5000);
     </script>
 </body>
 </html>
