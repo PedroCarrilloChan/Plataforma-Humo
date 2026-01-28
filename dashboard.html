@@ -6,221 +6,192 @@
     <title>HUMO Lab | Console</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Iconos -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Chart.js para gráficas profesionales -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #020202;
-            color: #e5e5e5;
-            overflow: hidden;
-        }
-
+        body { font-family: 'Inter', sans-serif; background-color: #020202; color: #e5e5e5; overflow: hidden; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
-
-        /* --- Fondo Inmersivo --- */
-        .immersive-bg {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; overflow: hidden; background: #020202;
-        }
-
-        .orb {
-            position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; animation: float 25s infinite ease-in-out; will-change: transform;
-        }
-        .orb-1 { top: -15%; right: -10%; width: 50vw; height: 50vw; background: radial-gradient(circle, #10b981 0%, transparent 70%); animation-delay: 0s; }
+        
+        /* Background & Effects */
+        .immersive-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; overflow: hidden; background: #020202; }
+        .orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; animation: float 25s infinite ease-in-out; }
+        .orb-1 { top: -15%; right: -10%; width: 50vw; height: 50vw; background: radial-gradient(circle, #10b981 0%, transparent 70%); }
         .orb-2 { bottom: -20%; left: -10%; width: 60vw; height: 60vw; background: radial-gradient(circle, #064e3b 0%, transparent 70%); animation-delay: -8s; opacity: 0.25; }
         .orb-3 { top: 40%; left: 30%; width: 40vw; height: 40vw; background: radial-gradient(circle, #047857 0%, transparent 70%); opacity: 0.15; animation-delay: -15s; }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -50px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.95); }
-        }
-
-        /* Grid Tecnológico */
-        .tech-grid {
-            position: fixed; inset: 0; z-index: -1;
-            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
-            -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
-            pointer-events: none;
-        }
+        @keyframes float { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -50px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.95); } }
+        
+        .tech-grid { position: fixed; inset: 0; z-index: -1; background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px); background-size: 50px 50px; mask-image: radial-gradient(circle at center, black 30%, transparent 80%); pointer-events: none; }
 
         /* Scrollbars */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.2); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #10b981; }
+        ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.2); border-radius: 3px; }
 
-        /* Estilos Glass & Paneles */
+        /* UI Components */
         .glass-panel { background: rgba(10, 10, 10, 0.4); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); transition: border-color 0.3s ease; }
         .side-panel { background: rgba(5, 5, 5, 0.3); backdrop-filter: blur(10px); }
         .glass-input { background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981; }
         .glass-input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); }
+        
+        /* KPI Cards */
+        .kpi-card { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); padding: 1rem; border-radius: 0.75rem; position: relative; overflow: hidden; }
+        .kpi-card::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, #10b981, transparent); opacity: 0.5; }
+        .kpi-value { font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; font-weight: bold; color: white; letter-spacing: -0.05em; }
+        .kpi-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: #9ca3af; margin-bottom: 0.25rem; }
 
-        /* HUD Corners & Effects */
+        /* Animations */
         .active-terminal { box-shadow: 0 0 40px rgba(16, 185, 129, 0.05); animation: border-breathe 4s infinite ease-in-out; }
         @keyframes border-breathe { 0%, 100% { border-color: rgba(255, 255, 255, 0.08); } 50% { border-color: rgba(16, 185, 129, 0.3); } }
-
-        .hud-corner { position: absolute; width: 15px; height: 15px; border-color: rgba(16, 185, 129, 0.6); border-style: solid; pointer-events: none; z-index: 20; }
-        .hud-tl { top: 0; left: 0; border-width: 2px 0 0 2px; border-radius: 4px 0 0 0; }
-        .hud-tr { top: 0; right: 0; border-width: 2px 2px 0 0; border-radius: 0 4px 0 0; }
-        .hud-bl { bottom: 0; left: 0; border-width: 0 0 2px 2px; border-radius: 0 0 0 4px; }
-        .hud-br { bottom: 0; right: 0; border-width: 0 2px 2px 0; border-radius: 0 0 4px 0; }
-
-        .core-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60%; height: 60%; background: radial-gradient(circle, rgba(16, 185, 129, 0.03) 0%, transparent 70%); pointer-events: none; z-index: 0; animation: glow-pulse 6s infinite alternate; }
-        @keyframes glow-pulse { 0% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.9); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } }
-
+        
+        .status-dot { width: 8px; height: 8px; background-color: #10b981; border-radius: 50%; box-shadow: 0 0 10px #10b981; }
         .animate-fade-in { animation: fadeIn 0.3s ease-in forwards; opacity: 0; }
         @keyframes fadeIn { to { opacity: 1; } }
-
-        /* Toggle Switch */
+        
         .view-btn.active { background-color: rgba(16, 185, 129, 0.2); color: #10b981; border-color: #10b981; }
         .view-btn { border: 1px solid transparent; }
     </style>
 </head>
 <body class="h-screen flex flex-col">
 
-    <!-- Fondo -->
-    <div class="immersive-bg">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-        <div class="tech-grid"></div>
-    </div>
+    <div class="immersive-bg"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div><div class="tech-grid"></div></div>
 
     <!-- Header -->
-    <header class="h-16 border-b border-white/10 flex items-center justify-between px-6 bg-black/40 backdrop-blur-md z-50">
+    <header class="h-14 border-b border-white/10 flex items-center justify-between px-6 bg-black/40 backdrop-blur-md z-50">
         <div class="flex items-center gap-3">
-            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-            <h1 class="font-bold tracking-[0.2em] text-lg">HUMO <span class="text-emerald-500 font-normal opacity-80">LAB CONSOLE</span></h1>
+            <div class="status-dot animate-pulse"></div>
+            <h1 class="font-bold tracking-[0.2em] text-sm md:text-lg">HUMO <span class="text-emerald-500 font-normal opacity-80">LAB CONSOLE</span></h1>
         </div>
-        
-        <!-- KPIs Rápidos Header -->
-        <div class="hidden md:flex items-center gap-8 text-xs font-mono">
-            <div class="flex flex-col items-end">
-                <span class="text-gray-500 text-[10px] uppercase">Active Users</span>
-                <span class="text-emerald-400 font-bold text-lg leading-none" id="stat-users">--</span>
-            </div>
-            <div class="flex flex-col items-end">
-                <span class="text-gray-500 text-[10px] uppercase">System Events</span>
-                <span class="text-white font-bold text-lg leading-none" id="stat-events">--</span>
-            </div>
-            <div class="h-8 w-px bg-white/10 mx-2"></div>
-            <div class="flex flex-col items-end">
-                <span class="text-gray-500 text-[10px] uppercase">AI Status</span>
-                <span class="text-emerald-500 font-bold">ONLINE</span>
-            </div>
+        <div class="flex items-center gap-6 text-[10px] font-mono text-gray-500">
+            <div class="hidden md:block">LATENCY: <span class="text-emerald-400">24ms</span></div>
+            <div>AI ENGINE: <span class="text-emerald-500 font-bold">ONLINE</span></div>
         </div>
     </header>
 
-    <!-- Main Grid -->
+    <!-- Main Layout -->
     <main class="flex-1 grid grid-cols-12 gap-0 overflow-hidden relative z-10">
         
-        <!-- Panel Izquierdo: Data Lake -->
+        <!-- Left: Users -->
         <aside class="col-span-3 border-r border-white/5 side-panel flex flex-col">
-            <div class="p-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
-                <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400 flex items-center gap-2">
-                    <i data-lucide="database" class="w-4 h-4"></i> Data Lake
-                </h2>
+            <div class="p-3 border-b border-white/5 flex justify-between items-center bg-white/5">
+                <h2 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 flex items-center gap-2"><i data-lucide="database" class="w-3 h-3"></i> Data Lake</h2>
                 <button onclick="fetchUsers()" class="text-gray-500 hover:text-white"><i data-lucide="refresh-cw" class="w-3 h-3"></i></button>
             </div>
-            <div class="flex-1 overflow-y-auto p-2 space-y-2 relative" id="user-list">
-                <div class="absolute inset-0 flex items-center justify-center text-emerald-500/50"><i data-lucide="loader-2" class="w-6 h-6 animate-spin"></i></div>
+            <div class="flex-1 overflow-y-auto p-2 space-y-1 relative" id="user-list">
+                <div class="absolute inset-0 flex items-center justify-center text-emerald-500/50"><i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i></div>
             </div>
         </aside>
 
-        <!-- Panel Central: Núcleo (Multi-View) -->
+        <!-- Center: Terminal/War Room -->
         <section class="col-span-6 flex flex-col relative glass-panel active-terminal mx-2 my-2 rounded-xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)]">
-            <!-- HUD Decorativo -->
-            <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div><div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
-            <div class="core-glow"></div>
-
-            <!-- Toolbar Central -->
-            <div class="absolute top-4 left-0 right-0 flex justify-center gap-2 z-20">
-                <button onclick="switchView('chat')" id="btn-chat" class="view-btn active px-4 py-1 rounded-full text-[10px] uppercase tracking-widest font-bold text-gray-400 bg-black/50 hover:text-white transition flex items-center gap-2">
-                    <i data-lucide="message-square" class="w-3 h-3"></i> AI Chat
-                </button>
-                <button onclick="switchView('metrics')" id="btn-metrics" class="view-btn px-4 py-1 rounded-full text-[10px] uppercase tracking-widest font-bold text-gray-400 bg-black/50 hover:text-white transition flex items-center gap-2">
-                    <i data-lucide="bar-chart-2" class="w-3 h-3"></i> War Room
-                </button>
+            <!-- Toggle -->
+            <div class="absolute top-3 left-0 right-0 flex justify-center gap-2 z-20">
+                <button onclick="switchView('chat')" id="btn-chat" class="view-btn active px-3 py-1 rounded-full text-[9px] uppercase tracking-widest font-bold text-gray-400 bg-black/60 hover:text-white transition flex items-center gap-2 backdrop-blur-sm"><i data-lucide="message-square" class="w-3 h-3"></i> AI Chat</button>
+                <button onclick="switchView('metrics')" id="btn-metrics" class="view-btn px-3 py-1 rounded-full text-[9px] uppercase tracking-widest font-bold text-gray-400 bg-black/60 hover:text-white transition flex items-center gap-2 backdrop-blur-sm"><i data-lucide="bar-chart-2" class="w-3 h-3"></i> War Room</button>
             </div>
-            
-            <!-- VISTA 1: Chat IA -->
-            <div id="view-chat" class="flex flex-col h-full pt-12 relative z-10 transition-opacity duration-300">
+
+            <!-- Chat View -->
+            <div id="view-chat" class="flex flex-col h-full pt-10 relative z-10 transition-opacity duration-300">
                 <div class="flex-1 overflow-y-auto p-6 space-y-6" id="chat-history">
                     <div class="flex gap-4 items-start animate-fade-in">
-                        <div class="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shrink-0">
-                            <i data-lucide="brain-circuit" class="w-5 h-5 text-emerald-500"></i>
-                        </div>
+                        <div class="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shrink-0"><i data-lucide="brain-circuit" class="w-4 h-4 text-emerald-500"></i></div>
                         <div class="space-y-1">
-                            <div class="text-[10px] text-emerald-500 font-mono uppercase">System Core</div>
-                            <div class="text-sm text-gray-300 leading-relaxed max-w-lg">
-                                Sistema operativo. Selecciona un usuario o escribe un comando.
-                            </div>
+                            <div class="text-[9px] text-emerald-500 font-mono uppercase">System Core</div>
+                            <div class="text-xs text-gray-300 leading-relaxed">Bienvenido, Operador. Sistema listo para análisis o conversación.</div>
                         </div>
                     </div>
                 </div>
-                <div class="p-4 bg-black/40 border-t border-white/5">
-                    <form id="ai-form" class="flex gap-3" onsubmit="handleAiSubmit(event)">
-                        <input type="text" id="ai-input" class="glass-input w-full px-4 py-3 rounded-lg font-mono text-sm placeholder-emerald-900/50" placeholder="Comando o ID..." autocomplete="off">
-                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-black font-bold px-6 py-2 rounded-lg transition"><i data-lucide="send" class="w-4 h-4"></i></button>
+                <div class="p-3 bg-black/40 border-t border-white/5">
+                    <form id="ai-form" class="flex gap-2" onsubmit="handleAiSubmit(event)">
+                        <input type="text" id="ai-input" class="glass-input w-full px-3 py-2 rounded font-mono text-xs placeholder-emerald-900/50" placeholder="Comando o ID..." autocomplete="off">
+                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-black px-4 rounded transition"><i data-lucide="send" class="w-3 h-3"></i></button>
                     </form>
                 </div>
             </div>
 
-            <!-- VISTA 2: Gráficas (War Room) -->
-            <div id="view-metrics" class="hidden h-full pt-16 p-6 relative z-10 grid grid-cols-2 gap-4 overflow-y-auto">
-                <!-- Gráfica 1: Tráfico -->
-                <div class="col-span-2 bg-black/40 border border-white/10 rounded-xl p-4">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xs text-emerald-400 font-bold uppercase tracking-widest">Actividad de Red (Tiempo Real)</h3>
-                        <div class="flex items-center gap-2"><div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div><span class="text-[10px] text-gray-500">LIVE</span></div>
+            <!-- War Room View (Expanded) -->
+            <div id="view-metrics" class="hidden h-full pt-14 p-4 relative z-10 overflow-y-auto custom-scroll">
+                
+                <!-- KPI DECK (Financiero & Conversión) -->
+                <div class="grid grid-cols-4 gap-3 mb-4">
+                    <div class="kpi-card">
+                        <div class="kpi-label">MRR Proyectado</div>
+                        <div class="kpi-value text-emerald-400">$<span id="kpi-mrr">0</span></div>
+                        <div class="text-[9px] text-emerald-500/70 mt-1 flex items-center gap-1"><i data-lucide="trending-up" class="w-3 h-3"></i> +0%</div>
                     </div>
-                    <div class="h-40 w-full"><canvas id="trafficChart"></canvas></div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Tasa Conversión</div>
+                        <div class="kpi-value text-blue-400"><span id="kpi-conv">0</span>%</div>
+                        <div class="text-[9px] text-gray-500 mt-1">Visita -> Registro</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Wallet Installs</div>
+                        <div class="kpi-value text-white"><span id="kpi-wallet">0</span></div>
+                        <div class="text-[9px] text-gray-500 mt-1">Activos en Pass</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Physical Scans</div>
+                        <div class="kpi-value text-yellow-400"><span id="kpi-scans">0</span></div>
+                        <div class="text-[9px] text-gray-500 mt-1">Últimas 24h</div>
+                    </div>
                 </div>
 
-                <!-- Gráfica 2: Niveles -->
-                <div class="bg-black/40 border border-white/10 rounded-xl p-4">
-                    <h3 class="text-xs text-emerald-400 font-bold uppercase tracking-widest mb-4">Distribución de Niveles</h3>
-                    <div class="h-32 w-full flex justify-center"><canvas id="levelChart"></canvas></div>
-                </div>
+                <!-- Gráficas Principales -->
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <!-- Tráfico vs Conversión -->
+                    <div class="col-span-2 bg-black/40 border border-white/10 rounded-xl p-3 h-48">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">Flujo de Adquisición</h3>
+                            <span class="text-[9px] text-gray-500 font-mono">LIVE UPDATE</span>
+                        </div>
+                        <div class="h-full w-full pb-4"><canvas id="trafficChart"></canvas></div>
+                    </div>
 
-                <!-- Gráfica 3: Arquetipos -->
-                <div class="bg-black/40 border border-white/10 rounded-xl p-4">
-                    <h3 class="text-xs text-emerald-400 font-bold uppercase tracking-widest mb-4">Radar de Arquetipos</h3>
-                    <div class="h-32 w-full flex justify-center"><canvas id="radarChart"></canvas></div>
+                    <!-- Financial Mix -->
+                    <div class="bg-black/40 border border-white/10 rounded-xl p-3 h-40">
+                        <h3 class="text-[10px] text-emerald-400 font-bold uppercase tracking-widest mb-2">Revenue Mix</h3>
+                        <div class="h-full w-full flex justify-center pb-4"><canvas id="financeChart"></canvas></div>
+                    </div>
+
+                    <!-- Wallet OS -->
+                    <div class="bg-black/40 border border-white/10 rounded-xl p-3 h-40">
+                        <h3 class="text-[10px] text-emerald-400 font-bold uppercase tracking-widest mb-2">Tecnología Wallet</h3>
+                        <div class="h-full w-full flex justify-center pb-4 relative">
+                            <canvas id="walletOSChart"></canvas>
+                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none mt-2"><i data-lucide="smartphone" class="w-4 h-4 text-white/20"></i></div>
+                        </div>
+                    </div>
+
+                    <!-- Arquetipos -->
+                    <div class="bg-black/40 border border-white/10 rounded-xl p-3 h-48">
+                        <h3 class="text-[10px] text-emerald-400 font-bold uppercase tracking-widest mb-2">Radar de Comportamiento</h3>
+                        <div class="h-full w-full flex justify-center pb-4"><canvas id="radarChart"></canvas></div>
+                    </div>
+
+                    <!-- Retention/Churn -->
+                    <div class="bg-black/40 border border-white/10 rounded-xl p-3 h-48">
+                        <h3 class="text-[10px] text-emerald-400 font-bold uppercase tracking-widest mb-2">Retención de Pases</h3>
+                        <div class="h-full w-full pb-4"><canvas id="walletStatusChart"></canvas></div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Panel Derecho: Live Feed -->
+        <!-- Right: Live Feed -->
         <aside class="col-span-3 border-l border-white/5 side-panel flex flex-col">
-            <div class="p-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
-                <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400 flex items-center gap-2">
-                    <i data-lucide="activity" class="w-4 h-4"></i> Live Feed
-                </h2>
-                <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+            <div class="p-3 border-b border-white/5 bg-white/5 flex justify-between items-center">
+                <h2 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 flex items-center gap-2"><i data-lucide="activity" class="w-3 h-3"></i> Event Stream</h2>
+                <div class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></div>
             </div>
-            <div class="flex-1 overflow-y-auto p-4 font-mono text-[10px] space-y-3" id="live-feed">
-                <!-- Feed dinámico -->
-            </div>
+            <div class="flex-1 overflow-y-auto p-3 font-mono text-[9px] space-y-2" id="live-feed"></div>
         </aside>
     </main>
 
     <script>
         lucide.createIcons();
-
-        // --- CONFIGURACIÓN ---
         const API_URL = "https://humo-api.smartpasses.workers.dev";
         const BRAIN_URL = "https://worker-ai.smartpasses.workers.dev";
         
         let selectedUserId = null;
-        let charts = {}; // Guardar instancias de gráficas
+        let charts = {};
 
-        // --- UI SWITCHER ---
         function switchView(view) {
             const chatView = document.getElementById('view-chat');
             const metricsView = document.getElementById('view-metrics');
@@ -228,255 +199,192 @@
             const btnMetrics = document.getElementById('btn-metrics');
 
             if (view === 'chat') {
-                chatView.classList.remove('hidden');
-                metricsView.classList.add('hidden');
-                btnChat.classList.add('active');
-                btnMetrics.classList.remove('active');
+                chatView.classList.remove('hidden'); metricsView.classList.add('hidden');
+                btnChat.classList.add('active'); btnMetrics.classList.remove('active');
             } else {
-                chatView.classList.add('hidden');
-                metricsView.classList.remove('hidden');
-                btnChat.classList.remove('active');
-                btnMetrics.classList.add('active');
-                initCharts(); // Renderizar gráficas si no existen
+                chatView.classList.add('hidden'); metricsView.classList.remove('hidden');
+                btnChat.classList.remove('active'); btnMetrics.classList.add('active');
+                setTimeout(initCharts, 100); // Delay para renderizado correcto
             }
         }
 
-        // --- 1. GRÁFICAS (CHART.JS) ---
+        // --- CHART CONFIGURATION ---
         function initCharts() {
-            if (charts.traffic) return; // Ya inicializadas
-
-            // Configuración común futurista
+            if (charts.traffic) return;
             Chart.defaults.color = '#6b7280';
             Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
             Chart.defaults.font.family = "'JetBrains Mono', monospace";
+            Chart.defaults.font.size = 9;
 
-            // 1. Tráfico (Line Chart)
+            // 1. Traffic vs Conversion
             const ctxTraffic = document.getElementById('trafficChart').getContext('2d');
-            const gradientTraffic = ctxTraffic.createLinearGradient(0, 0, 0, 400);
-            gradientTraffic.addColorStop(0, 'rgba(16, 185, 129, 0.2)');
-            gradientTraffic.addColorStop(1, 'rgba(16, 185, 129, 0)');
-
             charts.traffic = new Chart(ctxTraffic, {
                 type: 'line',
                 data: {
-                    labels: ['10:00', '10:05', '10:10', '10:15', '10:20', '10:25'],
-                    datasets: [{
-                        label: 'Requests',
-                        data: [12, 19, 3, 5, 2, 3], // Dummy data inicial
-                        borderColor: '#10b981',
-                        backgroundColor: gradientTraffic,
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 0
-                    }]
+                    labels: Array(10).fill(''),
+                    datasets: [
+                        { label: 'Visitas', data: [5, 8, 12, 19, 15, 22, 30, 25, 28, 35], borderColor: '#3b82f6', tension: 0.4, borderWidth: 1, pointRadius: 0 },
+                        { label: 'Registros', data: [1, 2, 3, 5, 4, 6, 8, 7, 9, 10], borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4, borderWidth: 1, pointRadius: 2 }
+                    ]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: { x: { grid: { display: false } }, y: { display: false } }
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'top', align: 'end', labels: { boxWidth: 8 } } }, scales: { x: { display: false }, y: { display: false } } }
             });
 
-            // 2. Niveles (Doughnut)
-            const ctxLevel = document.getElementById('levelChart').getContext('2d');
-            charts.level = new Chart(ctxLevel, {
-                type: 'doughnut',
+            // 2. Finance Mix (Bar)
+            const ctxFin = document.getElementById('financeChart').getContext('2d');
+            charts.finance = new Chart(ctxFin, {
+                type: 'bar',
                 data: {
-                    labels: ['Free', 'Pro', 'Elite'],
+                    labels: ['Free', 'Pro', 'Club'],
                     datasets: [{
-                        data: [85, 10, 5],
-                        backgroundColor: ['#34d399', '#10b981', '#064e3b'],
-                        borderWidth: 0,
-                        hoverOffset: 4
+                        label: 'MRR', data: [0, 1400, 5000], backgroundColor: ['#374151', '#10b981', '#fbbf24'], borderRadius: 3, barThickness: 25
                     }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '70%',
-                    plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } }
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { display: false } } }
             });
 
-            // 3. Radar Arquetipos
+            // 3. Wallet OS
+            const ctxOS = document.getElementById('walletOSChart').getContext('2d');
+            charts.os = new Chart(ctxOS, {
+                type: 'doughnut',
+                data: { labels: ['Apple', 'Google'], datasets: [{ data: [65, 35], backgroundColor: ['#fff', '#10b981'], borderWidth: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false } } }
+            });
+
+            // 4. Radar Arquetipos
             const ctxRadar = document.getElementById('radarChart').getContext('2d');
             charts.radar = new Chart(ctxRadar, {
                 type: 'radar',
                 data: {
-                    labels: ['Curioso', 'Aspirante', 'Social', 'Elite', 'Fantasma'],
-                    datasets: [{
-                        label: 'Usuarios',
-                        data: [60, 40, 20, 10, 30],
-                        backgroundColor: 'rgba(16, 185, 129, 0.2)',
-                        borderColor: '#10b981',
-                        pointBackgroundColor: '#fff',
-                        pointBorderColor: '#10b981',
-                    }]
+                    labels: ['Curioso', 'Pro', 'Social', 'Elite', 'Fantasma'],
+                    datasets: [{ label: 'User Types', data: [50, 30, 20, 10, 40], backgroundColor: 'rgba(16, 185, 129, 0.2)', borderColor: '#10b981', borderWidth: 1, pointRadius: 0 }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        r: {
-                            angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            pointLabels: { color: '#9ca3af', font: { size: 9 } },
-                            ticks: { display: false }
-                        }
-                    }
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { ticks: { display: false }, pointLabels: { color: '#6b7280', font: { size: 8 } }, grid: { color: 'rgba(255,255,255,0.05)' } } } }
+            });
+
+            // 5. Retention
+            const ctxRet = document.getElementById('walletStatusChart').getContext('2d');
+            charts.retention = new Chart(ctxRet, {
+                type: 'bar',
+                data: {
+                    labels: ['Activos', 'Eliminados'],
+                    datasets: [{ data: [120, 8], backgroundColor: ['#3b82f6', '#ef4444'], borderRadius: 3, barThickness: 15 }]
+                },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { grid: { display: false } } } }
             });
         }
 
-        // --- 2. DATOS REALES (UPDATES) ---
+        // --- DATA UPDATES ---
         async function fetchStats() {
             try {
                 const res = await fetch(`${API_URL}/stats`);
-                if(!res.ok) throw new Error('Network error');
                 const data = await res.json();
                 
-                // Actualizar Header
+                // Actualizar KPIs Deck
                 document.getElementById('stat-users').innerText = data.users || 0;
                 document.getElementById('stat-events').innerText = data.events || 0;
-
-                // Actualizar Gráficas (Simulación de tiempo real basada en datos totales)
+                
+                // Cálculos simulados para Financials (hasta tener data real)
+                const mockMRR = (data.users * 0.1 * 70) + (2 * 99); // 10% conversion est.
+                document.getElementById('kpi-mrr').innerText = Math.floor(mockMRR);
+                
+                // Update Traffic Chart (Simulación)
                 if (charts.traffic) {
-                    // Simular movimiento en la gráfica de línea añadiendo un poco de aleatoriedad al total de eventos
-                    const newData = charts.traffic.data.datasets[0].data;
-                    newData.push(data.events % 10 + Math.random() * 5); // Simulación visual
-                    newData.shift();
-                    charts.traffic.update('none'); // Animación suave
+                    const newVisits = Math.floor(Math.random() * 10) + 20;
+                    const newRegs = Math.floor(Math.random() * 3) + 1;
+                    
+                    charts.traffic.data.datasets[0].data.push(newVisits);
+                    charts.traffic.data.datasets[0].data.shift();
+                    charts.traffic.data.datasets[1].data.push(newRegs);
+                    charts.traffic.data.datasets[1].data.shift();
+                    
+                    // Calculo de Conversion Rate Real-ish
+                    const rate = ((newRegs / newVisits) * 100).toFixed(1);
+                    document.getElementById('kpi-conv').innerText = rate;
+                    
+                    charts.traffic.update('none');
                 }
-
-                // Aquí podrías actualizar los datos reales del Pie Chart si el endpoint /stats devolviera desglose por nivel
-                // Por ahora lo dejamos estático o simulado hasta mejorar el backend stats.
-
-            } catch (e) {
-                console.error("Error stats:", e);
-                document.getElementById('stat-users').innerText = "ERR";
-            }
+            } catch (e) { console.error("Stats Error", e); }
         }
 
-        // --- 3. CORE LOGIC (Usuarios y Chat - Igual que antes) ---
+        // --- CORE FUNCTIONS (Chat & Users) ---
+        // (Mantenemos la lógica de Chat inteligente y User List de la versión anterior)
         async function fetchUsers() {
             const container = document.getElementById('user-list');
             try {
                 const res = await fetch(`${API_URL}/users`);
                 const users = await res.json();
                 container.innerHTML = '';
-                if(users.length === 0) { container.innerHTML = '<div class="text-center text-gray-600 text-xs py-10">Sin datos</div>'; return; }
+                if(users.length === 0) { container.innerHTML = '<div class="text-center text-gray-600 text-[10px] py-4">Sin datos</div>'; return; }
                 users.forEach(user => {
                     const div = document.createElement('div');
-                    div.className = "p-3 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer border border-transparent hover:border-emerald-500/30 transition mb-2 animate-fade-in";
+                    div.className = "p-2 rounded bg-white/5 hover:bg-white/10 cursor-pointer border border-transparent hover:border-emerald-500/30 transition mb-1 animate-fade-in";
                     div.onclick = () => selectUser(user);
-                    div.innerHTML = `
-                        <div class="flex justify-between"><span class="font-bold text-sm text-white">${user.nombre}</span><span class="text-[10px] bg-white/10 px-2 rounded text-gray-400 uppercase">${user.nivel}</span></div>
-                        <div class="text-[10px] text-gray-500 truncate">ID: ${user.id}</div>
-                    `;
+                    div.innerHTML = `<div class="flex justify-between"><span class="font-bold text-xs text-white">${user.nombre}</span><span class="text-[9px] bg-white/10 px-1.5 rounded text-gray-400 uppercase">${user.nivel}</span></div><div class="text-[9px] text-gray-500 truncate">ID: ${user.id}</div>`;
                     container.appendChild(div);
                 });
-            } catch (e) { container.innerHTML = '<div class="text-center text-red-400 text-xs mt-4">Error API</div>'; }
+            } catch(e) { container.innerHTML = '<div class="text-red-500 text-[10px]">Error API</div>'; }
         }
 
         function selectUser(user) {
             document.getElementById('ai-input').value = user.id;
-            switchView('chat'); // Forzar vista chat al seleccionar
+            switchView('chat');
             selectedUserId = user.id;
         }
 
         async function handleAiSubmit(e) {
             e.preventDefault();
             const input = document.getElementById('ai-input');
-            const valor = input.value.trim();
-            if (!valor) return;
-
-            const isNumber = /^\d+$/.test(valor);
-            let payload = {};
-
-            if (isNumber) {
-                payload = { userId: parseInt(valor) };
-                addMessageToChat('user', `Analizar ID: ${valor}`);
-                selectedUserId = parseInt(valor);
-            } else {
-                payload = { prompt: valor };
-                if (selectedUserId) payload.userId = selectedUserId;
-                addMessageToChat('user', valor);
-            }
-
-            input.value = '';
-            input.disabled = true;
-            const loadingId = addMessageToChat('system', '<span class="animate-pulse">Procesando...</span>');
-
+            const val = input.value.trim();
+            if (!val) return;
+            
+            const isNumber = /^\d+$/.test(val);
+            let payload = isNumber ? { userId: parseInt(val) } : { prompt: val, userId: selectedUserId };
+            
+            addMessageToChat('user', isNumber ? `Analizar ID: ${val}` : val);
+            input.value = ''; input.disabled = true;
+            
             try {
-                const response = await fetch(BRAIN_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const result = await response.json();
-                document.getElementById(loadingId).remove();
-
-                if (result.success) {
-                    if (result.mode === 'analysis' && result.data) renderAnalysisCard(result.data);
-                    else addMessageToChat('system', result.response);
+                const res = await fetch(BRAIN_URL, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+                const json = await res.json();
+                if (json.success) {
+                    json.mode === 'analysis' && json.data ? renderAnalysisCard(json.data) : addMessageToChat('system', json.response);
                 } else {
-                    addMessageToChat('system', `Error: ${result.message || 'Error desconocido'}`, true);
+                    addMessageToChat('system', `Error: ${json.message || 'Desconocido'}`, true);
                 }
-            } catch (error) {
-                document.getElementById(loadingId).remove();
-                addMessageToChat('system', 'Error de conexión con HUMO Brain.', true);
-            } finally {
-                input.disabled = false;
-                input.focus();
-            }
+            } catch (e) { addMessageToChat('system', 'Error conexión IA', true); }
+            finally { input.disabled = false; input.focus(); }
         }
 
-        function addMessageToChat(role, html, isError = false) {
-            const container = document.getElementById('chat-history');
+        function addMessageToChat(role, html, isErr) {
+            const box = document.getElementById('chat-history');
             const div = document.createElement('div');
-            div.className = "flex gap-4 items-start animate-fade-in mb-6";
-            const icon = role === 'user' ? '<div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">👤</div>' : '<div class="w-8 h-8 rounded-full bg-emerald-900 flex items-center justify-center">🧠</div>';
-            div.innerHTML = `${icon}<div class="text-sm ${isError ? 'text-red-400' : (role === 'user' ? 'text-gray-300' : 'text-emerald-100')} leading-relaxed pt-1 whitespace-pre-wrap">${html}</div>`;
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-            return div.id = 'msg-' + Math.random();
+            div.className = "flex gap-3 items-start animate-fade-in mb-4";
+            div.innerHTML = role === 'user' ? 
+                `<div class="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center text-xs">👤</div><div class="text-xs text-gray-300 pt-1">${html}</div>` : 
+                `<div class="w-6 h-6 rounded-full bg-emerald-900 flex items-center justify-center text-xs">🧠</div><div class="text-xs ${isErr?'text-red-400':'text-emerald-100'} pt-1 leading-relaxed whitespace-pre-wrap">${html}</div>`;
+            box.appendChild(div); box.scrollTop = box.scrollHeight;
         }
 
         function renderAnalysisCard(data) {
-            const html = `
-                <div class="bg-black/40 border border-emerald-500/30 rounded-lg p-4 max-w-md">
-                    <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
-                        <h3 class="text-emerald-400 font-bold uppercase tracking-widest text-xs">Análisis Completado</h3>
-                    </div>
-                    <div class="mb-2"><span class="text-xs text-gray-500 uppercase">Perfil:</span> <strong class="text-white ml-2">${data.arquetipo}</strong></div>
-                    <div class="mb-4"><span class="text-xs text-gray-500 uppercase">Probabilidad:</span> <strong class="text-emerald-400 ml-2">${data.probabilidad_compra}%</strong></div>
-                    <div class="bg-emerald-500/10 p-3 rounded text-sm text-emerald-100 italic border border-emerald-500/20">"${data.mensaje_push}"</div>
-                </div>
-            `;
-            addMessageToChat('system', html);
+            addMessageToChat('system', `<div class="bg-black/40 border border-emerald-500/30 rounded p-3"><div class="flex justify-between mb-2 pb-2 border-b border-white/10"><span class="text-emerald-400 font-bold text-[10px] uppercase">Análisis</span></div><div class="text-xs text-white mb-1">Perfil: <b>${data.arquetipo}</b></div><div class="text-xs text-emerald-400 mb-2">Probabilidad: ${data.probabilidad_compra}%</div><div class="bg-emerald-500/10 p-2 rounded text-[10px] text-emerald-100 italic border border-emerald-500/20">"${data.mensaje_push}"</div></div>`);
         }
 
         function addLiveEvent() {
-            const container = document.getElementById('live-feed');
-            const types = ['click_nav', 'view_promo', 'login', 'db_sync'];
+            const box = document.getElementById('live-feed');
+            const types = ['click_nav', 'view_promo', 'login', 'db_sync', 'pass_install', 'geo_scan'];
             const type = types[Math.floor(Math.random() * types.length)];
+            let color = type.includes('pass') ? 'text-blue-400' : (type.includes('scan') ? 'text-yellow-400' : 'text-gray-400');
             const div = document.createElement('div');
-            div.className = "text-gray-400 border-l border-white/10 pl-2 animate-fade-in";
-            div.innerHTML = `<span class="text-emerald-600">[${new Date().toLocaleTimeString().split(' ')[0]}]</span> <span class="text-gray-500">System</span> <span class="text-yellow-500">${type}</span>`;
-            container.prepend(div);
-            if(container.children.length > 15) container.lastChild.remove();
-            setTimeout(addLiveEvent, Math.random() * 4000 + 1000);
+            div.className = `border-l border-white/10 pl-2 animate-fade-in ${color}`;
+            div.innerHTML = `<span class="text-emerald-700">[${new Date().toLocaleTimeString().split(' ')[0]}]</span> ${type}`;
+            box.prepend(div);
+            if(box.children.length > 15) box.lastChild.remove();
+            setTimeout(addLiveEvent, Math.random() * 3000 + 1000);
         }
 
-        // INIT
-        fetchUsers();
-        fetchStats();
-        addLiveEvent();
-        setInterval(fetchStats, 5000); // Actualización más rápida para ver gráficas moverse
-
+        // Init
+        fetchUsers(); fetchStats(); addLiveEvent(); setInterval(fetchStats, 5000);
     </script>
 </body>
 </html>
