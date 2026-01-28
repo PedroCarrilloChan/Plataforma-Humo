@@ -6,7 +6,7 @@
     <title>HUMO - Tecnología para una nueva forma de pertenecer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- Lucide Icons para la UI de instalación -->
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body {
@@ -27,7 +27,6 @@
         .orb-1 { top: -10%; right: -10%; width: 70vw; height: 70vw; background: radial-gradient(circle, #10b981 0%, transparent 70%); animation-delay: 0s; }
         .orb-2 { bottom: -10%; left: -20%; width: 80vw; height: 80vw; background: radial-gradient(circle, #064e3b 0%, transparent 70%); animation-delay: -8s; opacity: 0.3; }
         .orb-3 { top: 40%; left: 20%; width: 50vw; height: 50vw; background: radial-gradient(circle, #047857 0%, transparent 70%); opacity: 0.15; animation-delay: -15s; }
-        @media (min-width: 768px) { .orb-1 { width: 50vw; height: 50vw; } .orb-2 { width: 60vw; height: 60vw; } .orb-3 { width: 40vw; height: 40vw; } }
         @keyframes float { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -50px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.95); } }
         
         .tech-grid { position: fixed; inset: 0; z-index: -1; background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px); background-size: 50px 50px; mask-image: radial-gradient(circle at center, black 30%, transparent 80%); pointer-events: none; }
@@ -54,7 +53,18 @@
         
         html { scroll-behavior: smooth; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Estilos específicos para instrucciones de instalación */
+        .instruction-box { background: white; color: #1f2937; border-radius: 12px; padding: 16px; text-align: left; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid rgba(255,255,255,0.1); }
+        .instruction-step { margin-bottom: 16px; border-bottom: 1px solid #e5e7eb; padding-bottom: 16px; }
+        .instruction-step:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .step-img { width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        
+        /* Botones de instalación específicos */
+        .btn-install-android { background-color: #10b981; color: white; font-weight: bold; padding: 12px; border-radius: 9999px; width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 12px; box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.39); transition: all 0.2s; }
+        .btn-install-android:hover { transform: scale(1.02); }
+        
+        .btn-install-ios { background-color: #000; color: white; font-weight: bold; padding: 12px; border-radius: 12px; width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 12px; border: 1px solid #333; }
     </style>
 </head>
 <body>
@@ -89,8 +99,7 @@
                 <button onclick="openRegistration()" class="btn-primary w-full md:w-auto px-10 py-4 rounded-full font-bold text-black uppercase tracking-widest text-xs md:text-sm">Registrarme Gratis</button>
                 <a href="#benefits" onclick="trackEvent('click_hero', 'ver_beneficios')" class="w-full md:w-auto px-10 py-4 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm font-bold uppercase tracking-widest text-xs md:text-sm hover:bg-white/10 transition hover:border-white/30 flex items-center justify-center text-white">Ver Beneficios</a>
             </div>
-
-            <!-- Levels Preview -->
+            
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 md:mt-24 w-full max-w-5xl text-left">
                 <div class="glass-card p-6 rounded-2xl hover:bg-white/5 transition group cursor-default">
                     <div class="flex items-center space-x-3 mb-3"><div class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_#34d399]"></div><h3 class="text-sm font-bold uppercase tracking-widest text-gray-200">HUMO Free</h3></div>
@@ -107,45 +116,27 @@
                 </div>
             </div>
 
-            <!-- Benefits Section -->
             <section id="benefits" class="w-full max-w-6xl mt-24 md:mt-40 mb-20 relative z-20 scroll-mt-24">
                 <div class="text-center mb-12 md:mb-16 px-4">
                     <div class="inline-block px-3 py-1 mb-4 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-emerald-400 text-[10px] uppercase tracking-[0.2em] font-bold">¿Por qué descargar?</div>
                     <h2 class="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-emerald-100 to-emerald-400">Tu Pase de Acceso al Ecosistema</h2>
-                    <p class="text-gray-400 text-sm md:text-base max-w-2xl mx-auto font-light leading-relaxed">HUMO Free no es solo un registro. Es tu identidad digital verificada que desbloquea un mundo de experiencias, conocimiento y comunidad sin costo alguno.</p>
+                    <p class="text-gray-400 text-sm md:text-base max-w-2xl mx-auto font-light leading-relaxed">HUMO Free no es solo un registro. Es tu identidad digital verificada que desbloquea un mundo de experiencias.</p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 text-left px-2">
-                    <!-- Cards with Lucide Icons -->
                     <div class="glass-card p-6 md:p-8 rounded-2xl hover:border-emerald-500/30 transition duration-300 group hover:-translate-y-1">
                         <div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4 md:mb-6 border border-emerald-500/10"><i data-lucide="wallet" class="w-5 h-5 text-emerald-400"></i></div>
                         <h3 class="text-base md:text-lg font-bold mb-2 md:mb-3 text-white">Wallet Ready</h3>
-                        <p class="text-gray-500 text-xs leading-relaxed">Tu identidad vive en tu Wallet (Apple/Google). Sin apps pesadas, solo un pase digital seguro que evoluciona contigo.</p>
+                        <p class="text-gray-500 text-xs leading-relaxed">Tu identidad vive en tu Wallet (Apple/Google). Sin apps pesadas.</p>
                     </div>
                     <div class="glass-card p-6 md:p-8 rounded-2xl hover:border-emerald-500/30 transition duration-300 group hover:-translate-y-1">
                         <div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4 md:mb-6 border border-emerald-500/10"><i data-lucide="bell" class="w-5 h-5 text-emerald-400"></i></div>
                         <h3 class="text-base md:text-lg font-bold mb-2 md:mb-3 text-white">Alertas Exclusivas</h3>
-                        <p class="text-gray-500 text-xs leading-relaxed">Entérate antes que nadie de eventos secretos, catas privadas y agenda cultural a través de notificaciones push directas.</p>
+                        <p class="text-gray-500 text-xs leading-relaxed">Entérate antes que nadie de eventos secretos y catas privadas.</p>
                     </div>
                     <div class="glass-card p-6 md:p-8 rounded-2xl hover:border-emerald-500/30 transition duration-300 group hover:-translate-y-1">
                         <div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4 md:mb-6 border border-emerald-500/10"><i data-lucide="users" class="w-5 h-5 text-emerald-400"></i></div>
                         <h3 class="text-base md:text-lg font-bold mb-2 md:mb-3 text-white">Comunidad HUMO</h3>
-                        <p class="text-gray-500 text-xs leading-relaxed">Acceso a foros abiertos y red de miembros. Conecta con otros apasionados del ecosistema en un entorno seguro.</p>
-                    </div>
-                    <div class="glass-card p-6 md:p-8 rounded-2xl hover:border-emerald-500/30 transition duration-300 group hover:-translate-y-1">
-                        <div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4 md:mb-6 border border-emerald-500/10"><i data-lucide="shopping-bag" class="w-5 h-5 text-emerald-400"></i></div>
-                        <h3 class="text-base md:text-lg font-bold mb-2 md:mb-3 text-white">Acceso a Tienda</h3>
-                        <p class="text-gray-500 text-xs leading-relaxed">Navegación completa en nuestro catálogo web. Desbloquea descuentos básicos solo por ser miembro registrado.</p>
-                    </div>
-                    <div class="glass-card p-6 md:p-8 rounded-2xl hover:border-emerald-500/30 transition duration-300 group hover:-translate-y-1">
-                        <div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4 md:mb-6 border border-emerald-500/10"><i data-lucide="book-open" class="w-5 h-5 text-emerald-400"></i></div>
-                        <h3 class="text-base md:text-lg font-bold mb-2 md:mb-3 text-white">Contenido Curado</h3>
-                        <p class="text-gray-500 text-xs leading-relaxed">Recibe guías de inicio y tips de cultivo de nuestros expertos "Cultiva" y "Mesa & Jardín". Educación responsable.</p>
-                    </div>
-                    <!-- CTA Card -->
-                    <div class="glass-card p-6 md:p-8 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 flex flex-col justify-center items-center text-center group cursor-pointer hover:bg-emerald-500/10 transition duration-300 hover:shadow-[0_0_30px_rgba(16,185,129,0.1)]" onclick="openRegistration()">
-                        <div class="w-12 h-12 md:w-16 md:h-16 bg-emerald-500 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition duration-300 shadow-[0_0_20px_rgba(16,185,129,0.4)]"><i data-lucide="arrow-right" class="w-6 h-6 text-black"></i></div>
-                        <h3 class="text-lg md:text-xl font-bold mb-2 text-white">Únete Ahora</h3>
-                        <p class="text-emerald-400 text-[10px] md:text-xs font-bold uppercase tracking-widest mb-0 group-hover:text-emerald-300">Totalmente Gratis</p>
+                        <p class="text-gray-500 text-xs leading-relaxed">Acceso a foros abiertos y red de miembros.</p>
                     </div>
                 </div>
             </section>
@@ -178,21 +169,21 @@
                     </form>
                 </div>
 
-                <!-- Step 2: Install UI (Hidden by default) -->
-                <div id="step-install" class="hidden text-center">
-                    <div class="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20 relative">
+                <!-- Step 2: Install UI -->
+                <div id="step-install" class="hidden text-center h-full flex flex-col">
+                    <div class="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-500/20 relative">
                         <div class="absolute inset-0 bg-emerald-500/20 rounded-full animate-ping opacity-20"></div>
-                        <i data-lucide="check" class="w-8 h-8 text-emerald-500"></i>
+                        <i data-lucide="check" class="w-6 h-6 text-emerald-500"></i>
                     </div>
-                    <h2 class="text-xl md:text-2xl font-bold mb-2 text-white">¡Pase Generado!</h2>
-                    <p class="text-gray-400 mb-8 text-xs md:text-sm">Tu identidad digital está lista. Instálala ahora.</p>
+                    <h2 class="text-xl font-bold mb-2 text-white">¡Pase Generado!</h2>
+                    <p id="welcome-text" class="text-gray-400 mb-6 text-xs">Tu identidad digital está lista.</p>
 
-                    <!-- Dynamic Install Buttons -->
-                    <div id="install-container" class="space-y-4">
-                        <!-- Filled by JS based on device -->
+                    <!-- Dynamic Install Content -->
+                    <div id="install-container" class="space-y-4 text-left overflow-y-auto max-h-[60vh] pr-2">
+                        <!-- Filled by JS -->
                     </div>
 
-                    <button onclick="closeRegistration()" class="mt-8 px-6 py-2 rounded-full border border-white/10 text-[10px] uppercase tracking-widest hover:bg-white/5 transition text-gray-400">Cerrar</button>
+                    <button onclick="closeRegistration()" class="mt-6 px-6 py-2 rounded-full border border-white/10 text-[10px] uppercase tracking-widest hover:bg-white/5 transition text-gray-400 w-full">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -205,7 +196,9 @@
         const installStep = document.getElementById('step-install');
         const installContainer = document.getElementById('install-container');
         const mobileMenu = document.getElementById('mobile-menu');
-        const WORKER_URL = "https://humo-api.smartpasses.workers.dev"; // URL REAL
+        
+        // URL DEL WORKER (ASEGÚRATE DE QUE SEA LA CORRECTA)
+        const WORKER_URL = "https://humo-api.smartpasses.workers.dev"; 
 
         function toggleMobileMenu() {
             mobileMenu.classList.toggle('open');
@@ -214,10 +207,7 @@
 
         function openRegistration() {
             overlay.style.display = 'flex';
-            setTimeout(() => {
-                overlay.classList.add('active');
-                document.getElementById('main-content').classList.add('active');
-            }, 10);
+            setTimeout(() => { overlay.classList.add('active'); document.getElementById('main-content').classList.add('active'); }, 10);
             document.body.style.overflow = 'hidden';
         }
 
@@ -243,12 +233,7 @@
         }
 
         async function trackEvent(tipo, detalle) {
-            try {
-                fetch(`${WORKER_URL}/track`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ tipo, detalle })
-                }).catch(err => {});
-            } catch (e) {}
+            try { fetch(`${WORKER_URL}/track`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tipo, detalle }) }).catch(err => {}); } catch (e) {}
         }
 
         async function handleSubmit(event) {
@@ -258,12 +243,13 @@
             btn.innerText = "Creando Pase...";
             btn.disabled = true;
 
+            const name = document.getElementById('input-nombre').value;
             const payload = {
-                nombre: document.getElementById('input-nombre').value,
+                nombre: name,
                 apellido: document.getElementById('input-apellido').value,
                 telefono: document.getElementById('input-telefono').value,
                 email: document.getElementById('input-email').value,
-                device: detectDevice() // Enviamos el tipo de dispositivo al worker para tracking
+                device: detectDevice() 
             };
 
             try {
@@ -273,62 +259,88 @@
                 const result = await response.json();
 
                 if (response.ok && result.success) {
-                    showInstallUI(result.passes);
+                    showInstallUI(result.passes, name);
                 } else {
-                    alert(result.error || "Error al procesar. Intenta de nuevo.");
+                    alert(result.error || "Error al procesar.");
                     btn.innerText = originalText;
                     btn.disabled = false;
                 }
             } catch (error) {
                 console.error(error);
-                alert("Error de conexión. Verifica tu internet.");
+                alert("Error de conexión.");
                 btn.innerText = originalText;
                 btn.disabled = false;
             }
         }
 
-        function showInstallUI(passes) {
+        function showInstallUI(passes, name) {
             formStep.classList.add('hidden');
             installStep.classList.remove('hidden');
-            installContainer.innerHTML = ''; // Limpiar
+            installContainer.innerHTML = ''; 
+            document.getElementById('welcome-text').innerText = `Genial ${name}, sigue las instrucciones para tu dispositivo.`;
 
             const device = detectDevice();
 
-            if (device === 'ios') {
+            if (device === 'android') {
+                // INSTRUCCIONES ANDROID (Estilo visual mejorado)
                 installContainer.innerHTML = `
-                    <div class="bg-white/5 p-4 rounded-xl border border-white/10 mb-4">
-                        <p class="text-xs text-gray-300 mb-2">1. Presiona el botón abajo.</p>
-                        <p class="text-xs text-gray-300 mb-2">2. Toca "Añadir" en la esquina superior derecha.</p>
+                    <div class="instruction-box">
+                        <div class="instruction-step">
+                            <p class="text-xs text-gray-800 font-bold mb-1">Paso 1:</p>
+                            <p class="text-xs text-gray-500">Clic en el botón azul "Instalar" si te lo solicita, o "Abrir en App" si ya la tienes.</p>
+                            <!-- TODO: Reemplaza con tu imagen S3 de Android paso 1 -->
+                            <img src="https://placehold.co/600x400/png?text=Instruccion+Android+Paso+1" class="step-img" alt="Paso 1 Android">
+                        </div>
+                        
+                        <div class="instruction-step">
+                            <p class="text-xs text-gray-800 font-bold mb-1">Paso 2:</p>
+                            <p class="text-xs text-gray-500">Clic en "Abrir" para ver tu tarjeta en Wallet.</p>
+                            <!-- TODO: Reemplaza con tu imagen S3 de Android paso 2 -->
+                            <img src="https://placehold.co/600x400/png?text=Instruccion+Android+Paso+2" class="step-img" alt="Paso 2 Android">
+                        </div>
                     </div>
-                    <a href="${passes.ios}" class="flex items-center justify-center gap-3 w-full py-4 bg-black text-white border border-gray-700 rounded-xl font-bold hover:bg-gray-900 transition">
+
+                    <a href="${passes.android}" class="btn-install-android">
+                        <i data-lucide="smartphone" class="w-5 h-5"></i>
+                        Obtener Mi Tarjeta
+                    </a>
+                `;
+                trackEvent('pass_install_view', 'android');
+
+            } else if (device === 'ios') {
+                // INSTRUCCIONES IPHONE (Estilo visual mejorado)
+                installContainer.innerHTML = `
+                    <div class="instruction-box">
+                        <div class="instruction-step">
+                            <p class="text-xs text-gray-800 font-bold mb-2">Instrucciones rápidas:</p>
+                            <ul class="text-xs text-gray-500 list-decimal ml-4 space-y-2">
+                                <li>Presiona el botón negro "Obtener Pase" abajo.</li>
+                                <li>Cuando aparezca la tarjeta, toca <strong>"Añadir"</strong> en la esquina superior derecha de tu pantalla.</li>
+                            </ul>
+                            <!-- TODO: Reemplaza con tu imagen S3 de iPhone -->
+                            <img src="https://placehold.co/600x400/png?text=Instruccion+iPhone+Boton+Añadir" class="step-img" alt="Instrucción iPhone">
+                        </div>
+                    </div>
+
+                    <a href="${passes.ios}" class="btn-install-ios">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Add_to_Apple_Wallet_badge.svg" class="h-8" alt="Add to Apple Wallet">
                     </a>
                 `;
                 trackEvent('pass_install_view', 'ios');
-            } else if (device === 'android') {
-                installContainer.innerHTML = `
-                    <div class="bg-white/5 p-4 rounded-xl border border-white/10 mb-4">
-                        <p class="text-xs text-gray-300 mb-2">Recomendamos usar Smart Passes Wallet para la mejor experiencia.</p>
-                    </div>
-                    <a href="${passes.android}" class="flex items-center justify-center gap-2 w-full py-4 bg-[#10b981] text-black rounded-xl font-bold hover:bg-[#059669] transition shadow-[0_0_20px_rgba(16,185,129,0.3)]">
-                        <i data-lucide="smartphone" class="w-5 h-5"></i>
-                        Instalar en Android
-                    </a>
-                `;
-                trackEvent('pass_install_view', 'android');
+
             } else {
-                // Desktop
+                // DESKTOP
                 installContainer.innerHTML = `
-                    <div class="bg-white/5 p-4 rounded-xl border border-white/10 mb-4 text-left">
-                        <p class="text-xs text-yellow-400 mb-2 font-bold uppercase tracking-widest">Dispositivo de Escritorio Detectado</p>
-                        <p class="text-xs text-gray-300">Para instalar, abre estos enlaces en tu celular o escanea el código.</p>
+                    <div class="instruction-box text-center">
+                        <p class="text-xs text-yellow-600 mb-2 font-bold uppercase tracking-widest">Dispositivo de Escritorio</p>
+                        <p class="text-xs text-gray-500">Esta tarjeta está diseñada para móviles. Por favor, abre estos enlaces en tu celular.</p>
                     </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <a href="${passes.ios}" target="_blank" class="flex flex-col items-center justify-center p-4 bg-black border border-gray-800 rounded-xl hover:bg-gray-900 transition">
+                    <div class="grid grid-cols-2 gap-3 mt-4">
+                        <a href="${passes.ios}" target="_blank" class="flex flex-col items-center justify-center p-4 bg-gray-900 border border-gray-800 rounded-xl hover:bg-black transition">
                             <i data-lucide="apple" class="w-6 h-6 mb-2 text-white"></i>
                             <span class="text-[10px] text-gray-400">iPhone</span>
                         </a>
-                        <a href="${passes.android}" target="_blank" class="flex flex-col items-center justify-center p-4 bg-black border border-gray-800 rounded-xl hover:bg-gray-900 transition">
+                        <a href="${passes.android}" target="_blank" class="flex flex-col items-center justify-center p-4 bg-gray-900 border border-gray-800 rounded-xl hover:bg-black transition">
                             <i data-lucide="smartphone" class="w-6 h-6 mb-2 text-emerald-500"></i>
                             <span class="text-[10px] text-gray-400">Android</span>
                         </a>
