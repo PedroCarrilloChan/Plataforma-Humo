@@ -542,6 +542,11 @@
             // Close only if clicking the background wrapper, not the card
             if (e.target === overlay || e.target.classList.contains('py-8')) closeRegistration();
         });
+
+        // INIT: Track page view on load
+        // Esta línea es la que asegura el conteo de visitas para el Dashboard de IA
+        trackEvent('view', 'landing_page_visit'); 
+
     </script>
 </body>
 </html>
