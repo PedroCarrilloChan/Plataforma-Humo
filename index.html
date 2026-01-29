@@ -2,715 +2,362 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>B-drive | Cloud Management Console</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HUMO - Tecnología para una nueva forma de pertenecer</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020202;
+            color: #ffffff;
+            overflow-x: hidden;
+            margin: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* --- Fondo Inmersivo --- */
+        .immersive-bg {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; overflow: hidden; background: #020202;
+        }
+        .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5; animation: float 25s infinite ease-in-out; will-change: transform; }
+        @media (min-width: 768px) { .orb { filter: blur(100px); } }
+        .orb-1 { top: -10%; right: -10%; width: 70vw; height: 70vw; background: radial-gradient(circle, #10b981 0%, transparent 70%); animation-delay: 0s; }
+        .orb-2 { bottom: -10%; left: -20%; width: 80vw; height: 80vw; background: radial-gradient(circle, #064e3b 0%, transparent 70%); animation-delay: -8s; opacity: 0.3; }
+        .orb-3 { top: 40%; left: 20%; width: 50vw; height: 50vw; background: radial-gradient(circle, #047857 0%, transparent 70%); opacity: 0.15; animation-delay: -15s; }
+        @media (min-width: 768px) { .orb-1 { width: 50vw; height: 50vw; } .orb-2 { width: 60vw; height: 60vw; } .orb-3 { width: 40vw; height: 40vw; } }
+        @keyframes float { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -50px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.95); } }
         
-        :root { 
-            --bdrive-dark: #020617; 
-            --bdrive-navy: #0f172a; 
-            --bdrive-cyan: #06b6d4; 
-            --bdrive-blue: #3b82f6; 
-        }
+        .tech-grid { position: fixed; inset: 0; z-index: -1; background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px); background-size: 50px 50px; mask-image: radial-gradient(circle at center, black 30%, transparent 80%); pointer-events: none; }
 
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #f8fafc; 
-            color: #1e293b; 
-            overflow-x: hidden; 
-        }
+        /* UI Components */
+        .glass-card { background: rgba(10, 10, 10, 0.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); }
+        .btn-primary { background: linear-gradient(135deg, #10b981 0%, #059669 100%); transition: all 0.3s ease; box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); border: none; cursor: pointer; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(16, 185, 129, 0.5); }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
 
-        .glass-panel { 
-            background: rgba(255, 255, 255, 0.95); 
-            backdrop-filter: blur(12px); 
-            border-bottom: 1px solid rgba(226, 232, 240, 0.8); 
-        }
-
-        .sidebar-item-active { 
-            background: linear-gradient(90deg, rgba(6, 182, 212, 0.12) 0%, rgba(6, 182, 212, 0) 100%); 
-            border-left: 4px solid var(--bdrive-cyan); 
-            color: var(--bdrive-cyan); 
-            font-weight: 700; 
-        }
-
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-
-        .animate-fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .modal-overlay { background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(6px); z-index: 100; }
+        /* Overlays */
+        #registration-overlay { display: none; opacity: 0; transition: opacity 0.4s ease; }
+        #registration-overlay.active { display: flex; opacity: 1; }
+        .blur-target { transition: filter 0.4s ease, transform 0.4s ease; }
+        .blur-target.active { filter: blur(12px); transform: scale(0.98); }
         
-        .sidebar-mobile {
-            transform: translateX(-100%);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .sidebar-mobile.open {
-            transform: translateX(0);
-        }
+        #mobile-menu { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateY(-100%); }
+        #mobile-menu.open { transform: translateY(0); }
 
-        .chart-container { position: relative; height: 260px; width: 100%; }
-        .notes-textarea { resize: none; scrollbar-width: thin; transition: all 0.3s ease; }
+        /* Inputs */
+        input { background: rgba(255, 255, 255, 0.03) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; color: white !important; transition: all 0.3s ease; -webkit-appearance: none; }
+        input:focus { background: rgba(255, 255, 255, 0.08) !important; border-color: #10b981 !important; outline: none; box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.2); }
         
-        [data-lucide] {
-            display: inline-block;
-            stroke-width: 2.5;
-            color: currentColor;
-        }
-
-        .input-error {
-            border: 2px solid #f43f5e !important;
-            background: #fef2f2 !important;
-        }
-
-        .error-message {
-            color: #f43f5e;
-            font-size: 10px;
-            font-weight: 700;
-            margin-top: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
+        html { scroll-behavior: smooth; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        /* Estilos específicos para instrucciones de instalación */
+        .instruction-box { background: rgba(255,255,255,0.05); color: #e5e7eb; border-radius: 12px; padding: 16px; text-align: left; border: 1px solid rgba(255,255,255,0.1); }
+        .instruction-step { margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px; }
+        .instruction-step:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .step-img { width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid rgba(255,255,255,0.2); }
+        
+        /* Botones de instalación específicos */
+        .btn-install-android { background-color: #10b981; color: black; font-weight: bold; padding: 12px; border-radius: 9999px; width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 12px; box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.39); transition: all 0.2s; }
+        .btn-install-android:hover { transform: scale(1.02); }
+        
+        .btn-install-ios { background-color: #000; color: white; font-weight: bold; padding: 12px; border-radius: 12px; width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 12px; border: 1px solid #333; }
     </style>
 </head>
 <body>
-    <div id="root"></div>
 
-    <script type="text/babel">
-        const { useState, useEffect, useMemo, useRef } = React;
+    <div class="immersive-bg"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div><div class="tech-grid"></div></div>
 
-        const API_BASE_URL = "https://bdrive-admin-api.smartpasses.workers.dev"; 
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl flex flex-col justify-center items-center md:hidden pt-20 pb-10 px-8 space-y-8">
+        <a href="#benefits" onclick="toggleMobileMenu(); trackEvent('click_menu', 'beneficios')" class="text-2xl font-light text-white tracking-widest hover:text-emerald-500 transition">BENEFICIOS</a>
+        <a href="#" onclick="toggleMobileMenu(); trackEvent('click_menu', 'clubes')" class="text-2xl font-light text-white tracking-widest hover:text-emerald-500 transition">CLUBES</a>
+        <button onclick="toggleMobileMenu(); openRegistration()" class="mt-8 px-10 py-4 rounded-full border border-emerald-500 text-emerald-500 font-bold uppercase tracking-widest">Registrarme</button>
+        <button onclick="toggleMobileMenu()" class="absolute top-8 right-8 text-gray-400"><i data-lucide="x" class="w-8 h-8"></i></button>
+    </div>
 
-        const cleanServiceName = (name) => {
-            if (!name) return "";
-            return name.replace(/\(Google Workspace\)/gi, "").trim();
-        };
+    <!-- Main Content -->
+    <div id="main-content" class="blur-target relative z-10 min-h-screen flex flex-col justify-between">
+        <nav class="flex justify-between items-center p-6 md:p-8 max-w-7xl mx-auto w-full relative z-50">
+            <div class="text-xl md:text-2xl font-bold tracking-widest text-white relative z-50">HUMO</div>
+            <div class="hidden md:flex space-x-8 text-sm uppercase tracking-widest text-gray-400">
+                <a href="#benefits" onclick="trackEvent('click_nav', 'beneficios')" class="hover:text-emerald-400 transition hover:glow">Beneficios</a>
+                <a href="#" onclick="trackEvent('click_nav', 'clubes')" class="hover:text-emerald-400 transition hover:glow">Clubes</a>
+                <a href="#" onclick="trackEvent('click_nav', 'tecnologia')" class="hover:text-emerald-400 transition hover:glow">Tecnología</a>
+            </div>
+            <button class="md:hidden text-white p-2 relative z-50 focus:outline-none" onclick="toggleMobileMenu()"><i data-lucide="menu" class="w-6 h-6"></i></button>
+        </nav>
 
-        const App = () => {
-            const [view, setView] = useState('dashboard');
-            const [services, setServices] = useState([]);
-            const [globalConfig, setGlobalConfig] = useState(null);
-            const [quotes, setQuotes] = useState([]);
-            const [selectedService, setSelectedService] = useState(null);
-            const [selectedQuote, setSelectedQuote] = useState(null);
-            const [loading, setLoading] = useState(true);
-            const [saving, setSaving] = useState(false);
-            const [message, setMessage] = useState(null);
-            const [searchQuery, setSearchQuery] = useState("");
-            const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-            const [validationErrors, setValidationErrors] = useState({});
+        <main class="max-w-7xl mx-auto px-6 md:px-8 py-10 flex flex-col items-center text-center flex-grow justify-center">
+            <div class="inline-block px-4 py-1 border border-emerald-500/30 bg-emerald-500/5 rounded-full text-emerald-400 text-[10px] font-bold mb-8 uppercase tracking-[0.2em] animate-pulse">Fase 3: Lanzamiento</div>
+            <h1 class="text-4xl sm:text-5xl md:text-8xl font-bold mb-8 tracking-tighter leading-[1.1] md:leading-none bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-500">Tecnología para <br><span class="text-emerald-500 bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-emerald-600">una nueva forma</span><br>de pertenecer.</h1>
+            <p class="text-gray-400 text-base md:text-xl max-w-2xl mb-12 leading-relaxed font-light px-4">Infraestructura digital para el ecosistema cannábico. <br class="hidden md:block">Membresías, comunicación y lealtad sin fricción.</p>
+            <div class="flex flex-col w-full md:w-auto md:flex-row space-y-4 md:space-y-0 md:space-x-6 z-20 px-4">
+                <button onclick="openRegistration()" class="btn-primary w-full md:w-auto px-10 py-4 rounded-full font-bold text-black uppercase tracking-widest text-xs md:text-sm">Registrarme Gratis</button>
+                <a href="#benefits" onclick="trackEvent('click_hero', 'ver_beneficios')" class="w-full md:w-auto px-10 py-4 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm font-bold uppercase tracking-widest text-xs md:text-sm hover:bg-white/10 transition hover:border-white/30 flex items-center justify-center text-white">Ver Beneficios</a>
+            </div>
             
-            const [currentPage, setCurrentPage] = useState(1);
-            const itemsPerPage = 8;
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 md:mt-24 w-full max-w-5xl text-left">
+                <div class="glass-card p-6 rounded-2xl hover:bg-white/5 transition group cursor-default">
+                    <div class="flex items-center space-x-3 mb-3"><div class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_#34d399]"></div><h3 class="text-sm font-bold uppercase tracking-widest text-gray-200">HUMO Free</h3></div>
+                    <p class="text-gray-500 text-xs leading-relaxed group-hover:text-gray-300 transition">Tu puerta de entrada. Identidad verificada en tu wallet.</p>
+                </div>
+                <div class="glass-card p-6 rounded-2xl border-emerald-500/30 hover:border-emerald-500/50 transition group cursor-default relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-16 h-16 bg-emerald-500/10 rounded-bl-full -mr-4 -mt-4"></div>
+                    <div class="flex items-center space-x-3 mb-3"><div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]"></div><h3 class="text-sm font-bold uppercase tracking-widest text-white">Cultiva Pro</h3></div>
+                    <p class="text-gray-500 text-xs leading-relaxed group-hover:text-gray-300 transition">IA 24/7 y expertos para aprendizaje real.</p>
+                </div>
+                <div class="glass-card p-6 rounded-2xl hover:bg-white/5 transition group cursor-default">
+                    <div class="flex items-center space-x-3 mb-3"><div class="w-2 h-2 rounded-full bg-gray-500"></div><h3 class="text-sm font-bold uppercase tracking-widest text-gray-200">Club Elite</h3></div>
+                    <p class="text-gray-500 text-xs leading-relaxed group-hover:text-gray-300 transition">Infraestructura B2B para lealtad y retención.</p>
+                </div>
+            </div>
 
-            const chartRef1 = useRef(null);
-            const chartRef2 = useRef(null);
+            <section id="benefits" class="w-full max-w-6xl mt-24 md:mt-40 mb-20 relative z-20 scroll-mt-24">
+                <div class="text-center mb-12 md:mb-16 px-4">
+                    <div class="inline-block px-3 py-1 mb-4 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-emerald-400 text-[10px] uppercase tracking-[0.2em] font-bold">¿Por qué descargar?</div>
+                    <h2 class="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-emerald-100 to-emerald-400">Tu Pase de Acceso al Ecosistema</h2>
+                    <p class="text-gray-400 text-sm md:text-base max-w-2xl mx-auto font-light leading-relaxed">HUMO Free no es solo un registro. Es tu identidad digital verificada que desbloquea un mundo de experiencias.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 text-left px-2">
+                    <div class="glass-card p-6 md:p-8 rounded-2xl hover:border-emerald-500/30 transition duration-300 group hover:-translate-y-1">
+                        <div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4 md:mb-6 border border-emerald-500/10"><i data-lucide="wallet" class="w-5 h-5 text-emerald-400"></i></div>
+                        <h3 class="text-base md:text-lg font-bold mb-2 md:mb-3 text-white">Wallet Ready</h3>
+                        <p class="text-gray-500 text-xs leading-relaxed">Tu identidad vive en tu Wallet (Apple/Google). Sin apps pesadas.</p>
+                    </div>
+                    <div class="glass-card p-6 md:p-8 rounded-2xl hover:border-emerald-500/30 transition duration-300 group hover:-translate-y-1">
+                        <div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4 md:mb-6 border border-emerald-500/10"><i data-lucide="bell" class="w-5 h-5 text-emerald-400"></i></div>
+                        <h3 class="text-base md:text-lg font-bold mb-2 md:mb-3 text-white">Alertas Exclusivas</h3>
+                        <p class="text-gray-500 text-xs leading-relaxed">Entérate antes que nadie de eventos secretos y catas privadas.</p>
+                    </div>
+                    <div class="glass-card p-6 md:p-8 rounded-2xl hover:border-emerald-500/30 transition duration-300 group hover:-translate-y-1">
+                        <div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4 md:mb-6 border border-emerald-500/10"><i data-lucide="users" class="w-5 h-5 text-emerald-400"></i></div>
+                        <h3 class="text-base md:text-lg font-bold mb-2 md:mb-3 text-white">Comunidad HUMO</h3>
+                        <p class="text-gray-500 text-xs leading-relaxed">Acceso a foros abiertos y red de miembros.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <footer class="p-8 text-center text-gray-700 text-[10px] tracking-[0.2em] uppercase">&copy; 2026 HUMO Inc.</footer>
+    </div>
 
-            useEffect(() => { fetchInitialData(); }, []);
+    <!-- Registration & Install Overlay -->
+    <div id="registration-overlay" class="fixed inset-0 z-[60] justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto items-start md:items-center">
+        <div class="w-full min-h-full flex items-center justify-center py-8">
+            <div class="glass-card w-full max-w-lg rounded-3xl p-6 md:p-10 relative border-emerald-500/20 shadow-[0_0_50px_rgba(16,185,129,0.1)]">
+                <button onclick="closeRegistration()" class="absolute top-4 right-4 text-gray-500 hover:text-white transition"><i data-lucide="x" class="w-6 h-6"></i></button>
 
-            useEffect(() => {
-                if (!loading) {
-                    const timer = setTimeout(() => {
-                        if (window.lucide) window.lucide.createIcons();
-                        if (view === 'dashboard' && quotes.length > 0) renderCharts();
-                    }, 100);
-                    return () => clearTimeout(timer);
-                }
-            }, [view, services, selectedService, globalConfig, loading, quotes, currentPage, searchQuery, selectedQuote]);
+                <!-- Step 1: Form -->
+                <div id="step-form">
+                    <div class="mb-6 md:mb-8">
+                        <div class="w-12 h-1 bg-emerald-500 mb-4 md:mb-6 rounded-full"></div>
+                        <h2 class="text-2xl md:text-3xl font-bold mb-2 tracking-tight text-white">Únete a HUMO</h2>
+                        <p class="text-gray-400 text-sm">Descarga tu pase digital y accede al ecosistema.</p>
+                    </div>
+                    <form id="free-register-form" onsubmit="handleSubmit(event)" class="space-y-4 md:space-y-5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div><label class="block text-[10px] uppercase font-bold text-gray-500 mb-2">Nombre</label><input type="text" id="input-nombre" required class="w-full px-4 py-3 rounded-xl text-sm" placeholder="Ej. Sergio"></div>
+                            <div><label class="block text-[10px] uppercase font-bold text-gray-500 mb-2">Apellido</label><input type="text" id="input-apellido" required class="w-full px-4 py-3 rounded-xl text-sm" placeholder="Ej. González"></div>
+                        </div>
+                        <div><label class="block text-[10px] uppercase font-bold text-gray-500 mb-2">Teléfono</label><input type="tel" id="input-telefono" required class="w-full px-4 py-3 rounded-xl text-sm" placeholder="+57 300 000 0000"></div>
+                        <div><label class="block text-[10px] uppercase font-bold text-gray-500 mb-2">Email</label><input type="email" id="input-email" required class="w-full px-4 py-3 rounded-xl text-sm" placeholder="tu@email.com"></div>
+                        <div class="pt-4"><button type="submit" id="btn-submit" class="btn-primary w-full py-4 rounded-xl font-bold text-black uppercase tracking-widest text-xs">Generar Pase Digital</button></div>
+                        <p class="text-[9px] text-gray-600 text-center mt-4">Mayores de 18 años. Uso responsable.</p>
+                    </form>
+                </div>
 
-            const fetchInitialData = async () => {
-                setLoading(true);
-                try {
-                    const [qRes, sRes, gRes] = await Promise.all([
-                        fetch(`${API_BASE_URL}/api/quotes`),
-                        fetch(`${API_BASE_URL}/api/services`),
-                        fetch(`${API_BASE_URL}/api/config/global`)
-                    ]);
-                    if (qRes.ok) setQuotes(await qRes.json());
-                    if (sRes.ok) setServices(await sRes.json());
-                    if (gRes.ok) {
-                        setGlobalConfig(await gRes.json());
-                    } else {
-                        // Crear config por defecto si no existe
-                        setGlobalConfig({
-                            fiscales: { iva_porcentaje: 16, retencion_isr: 0, retencion_iva: 0 },
-                            financieros: { tipo_cambio_usd_mxn: 18.50, dias_vigencia_cotizacion: 30 },
-                            contacto: { email: "ventas@b-drive.com", telefono: "+52 55 1234 5678", whatsapp: "+52 55 1234 5678", sitio_web: "https://b-drive.com" },
-                            branding: { empresa_nombre: "B-drive", logo_url: "", color_primario: "#06b6d4" }
-                        });
-                    }
-                } catch (err) {
-                    setMessage({ text: "Error de red: Worker inaccesible", type: "error" });
-                } finally {
-                    setLoading(false);
-                }
+                <!-- Step 2: Install UI -->
+                <div id="step-install" class="hidden text-center h-full flex flex-col">
+                    <div class="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-500/20 relative">
+                        <div class="absolute inset-0 bg-emerald-500/20 rounded-full animate-ping opacity-20"></div>
+                        <i data-lucide="check" class="w-6 h-6 text-emerald-500"></i>
+                    </div>
+                    <h2 class="text-xl font-bold mb-2 text-white">¡Pase Generado!</h2>
+                    <p id="welcome-text" class="text-gray-400 mb-6 text-xs">Tu identidad digital está lista.</p>
+
+                    <!-- Dynamic Install Content -->
+                    <div id="install-container" class="space-y-4 text-left overflow-y-auto max-h-[60vh] pr-2 custom-scroll">
+                        <!-- Filled by JS -->
+                    </div>
+
+                    <button onclick="closeRegistration()" class="mt-6 px-6 py-2 rounded-full border border-white/10 text-[10px] uppercase tracking-widest hover:bg-white/5 transition text-gray-400 w-full">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        const overlay = document.getElementById('registration-overlay');
+        const formStep = document.getElementById('step-form');
+        const installStep = document.getElementById('step-install');
+        const installContainer = document.getElementById('install-container');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        // URL DEL WORKER (ASEGÚRATE DE QUE SEA LA CORRECTA)
+        const WORKER_URL = "https://humo-api.smartpasses.workers.dev"; 
+
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle('open');
+            document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+        }
+
+        function openRegistration() {
+            overlay.style.display = 'flex';
+            setTimeout(() => { overlay.classList.add('active'); document.getElementById('main-content').classList.add('active'); }, 10);
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeRegistration() {
+            overlay.classList.remove('active');
+            document.getElementById('main-content').classList.remove('active');
+            document.body.style.overflow = '';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                formStep.classList.remove('hidden');
+                installStep.classList.add('hidden');
+                document.getElementById('free-register-form').reset();
+                const btn = document.getElementById('btn-submit');
+                if(btn) { btn.innerText = "Generar Pase Digital"; btn.disabled = false; }
+            }, 400);
+        }
+
+        function detectDevice() {
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+            if (/android/i.test(ua)) return 'android';
+            if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) return 'ios';
+            return 'desktop';
+        }
+
+        async function trackEvent(tipo, detalle) {
+            try { fetch(`${WORKER_URL}/track`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tipo, detalle }) }).catch(err => {}); } catch (e) {}
+        }
+
+        async function handleSubmit(event) {
+            event.preventDefault();
+            const btn = document.getElementById('btn-submit');
+            const originalText = btn.innerText;
+            btn.innerText = "Creando Pase...";
+            btn.disabled = true;
+
+            const name = document.getElementById('input-nombre').value;
+            const payload = {
+                nombre: name,
+                apellido: document.getElementById('input-apellido').value,
+                telefono: document.getElementById('input-telefono').value,
+                email: document.getElementById('input-email').value,
+                device: detectDevice() 
             };
 
-            const renderCharts = () => {
-                const ctx1 = document.getElementById('leadsChart');
-                const ctx2 = document.getElementById('serviceChart');
-                if (ctx1) {
-                    if (chartRef1.current) chartRef1.current.destroy();
-                    const dailyData = quotes.reduce((acc, q) => {
-                        const date = q.fecha ? q.fecha.split('T')[0] : 'N/A';
-                        acc[date] = (acc[date] || 0) + 1;
-                        return acc;
-                    }, {});
-                    const labels = Object.keys(dailyData).sort().slice(-7);
-                    chartRef1.current = new Chart(ctx1, {
-                        type: 'line',
-                        data: {
-                            labels,
-                            datasets: [{ label: 'Leads', data: labels.map(l => dailyData[l]), borderColor: '#06b6d4', backgroundColor: 'rgba(6, 182, 212, 0.1)', fill: true, tension: 0.4 }]
-                        },
-                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-                    });
-                }
-                if (ctx2) {
-                    if (chartRef2.current) chartRef2.current.destroy();
-                    const serviceData = quotes.reduce((acc, q) => {
-                        const name = cleanServiceName(q.servicio || "Otros");
-                        acc[name] = (acc[name] || 0) + 1;
-                        return acc;
-                    }, {});
-                    chartRef2.current = new Chart(ctx2, {
-                        type: 'doughnut',
-                        data: {
-                            labels: Object.keys(serviceData),
-                            datasets: [{ data: Object.values(serviceData), backgroundColor: ['#06b6d4', '#3b82f6', '#8b5cf6', '#f43f5e', '#10b981'], borderWidth: 0 }]
-                        },
-                        options: { responsive: true, maintainAspectRatio: false, cutout: '75%' }
-                    });
-                }
-            };
+            try {
+                const response = await fetch(`${WORKER_URL}/register`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                });
+                const result = await response.json();
 
-            // 🆕 VALIDACIONES
-            const validateField = (field, value, type = 'number') => {
-                if (type === 'number') {
-                    const num = parseFloat(value);
-                    if (isNaN(num) || num < 0) return "Debe ser un número positivo";
-                }
-                if (type === 'percentage') {
-                    const num = parseFloat(value);
-                    if (isNaN(num) || num < 0 || num > 100) return "Debe estar entre 0-100%";
-                }
-                if (type === 'email') {
-                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return "Email inválido";
-                }
-                if (type === 'url') {
-                    if (value && !/^https?:\/\/.+/.test(value)) return "URL debe iniciar con http:// o https://";
-                }
-                return null;
-            };
-
-            const handlePriceUpdate = (matrixKey, value, subKey = 'precio') => {
-                if (!selectedService) return;
-                const updated = JSON.parse(JSON.stringify(selectedService));
-                const val = parseFloat(value) || 0;
-                
-                const error = validateField(matrixKey, value, 'number');
-                if (error) {
-                    setValidationErrors({...validationErrors, [matrixKey]: error});
-                    return;
+                if (response.ok && result.success) {
+                    showInstallUI(result.passes, name);
                 } else {
-                    const newErrors = {...validationErrors};
-                    delete newErrors[matrixKey];
-                    setValidationErrors(newErrors);
+                    alert(result.error || "Error al procesar. Intenta de nuevo.");
+                    btn.innerText = originalText;
+                    btn.disabled = false;
                 }
-                
-                if (updated.matriz_precios?.[matrixKey]?.precio) {
-                    updated.matriz_precios[matrixKey].precio.monto = val;
-                } 
-                else if (updated.planes?.[matrixKey]) {
-                    updated.planes[matrixKey].precio_mensual = val;
-                }
-                else if (updated.precios_por_agente_mes_mxn?.[matrixKey]) {
-                    updated.precios_por_agente_mes_mxn[matrixKey].precio = val;
-                }
-                else if (updated.tipos_instancia?.[matrixKey]) {
-                    updated.tipos_instancia[matrixKey][subKey] = val;
-                }
-                setSelectedService(updated);
-            };
+            } catch (error) {
+                console.error(error);
+                alert("Error de conexión. Verifica tu internet.");
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
 
-            // 🆕 HANDLE TARIFAS NUBE GCP
-            const handleNubeTarifaUpdate = (region, instancia, value) => {
-                if (!selectedService) return;
-                const updated = JSON.parse(JSON.stringify(selectedService));
-                const val = parseFloat(value) || 0;
-                
-                if (!updated.tarifas_por_hora_usd) updated.tarifas_por_hora_usd = {};
-                if (!updated.tarifas_por_hora_usd[region]) updated.tarifas_por_hora_usd[region] = {};
-                
-                updated.tarifas_por_hora_usd[region][instancia] = val;
-                setSelectedService(updated);
-            };
+        function showInstallUI(passes, name) {
+            formStep.classList.add('hidden');
+            installStep.classList.remove('hidden');
+            installContainer.innerHTML = ''; 
+            document.getElementById('welcome-text').innerText = `Genial ${name}, sigue las instrucciones para tu dispositivo.`;
 
-            // 🆕 HANDLE UMBRALES
-            const handleUmbralUpdate = (field, value) => {
-                if (!selectedService) return;
-                const updated = JSON.parse(JSON.stringify(selectedService));
-                if (!updated.umbrales_volumen) updated.umbrales_volumen = {};
-                updated.umbrales_volumen[field] = parseInt(value) || 0;
-                setSelectedService(updated);
-            };
+            const device = detectDevice();
 
-            // 🆕 HANDLE FÓRMULA B-DRIVE
-            const handleFormulaBdriveUpdate = (field, value) => {
-                if (!selectedService) return;
-                const updated = JSON.parse(JSON.stringify(selectedService));
-                if (!updated.formula_bdrive) updated.formula_bdrive = {};
-                updated.formula_bdrive[field] = parseFloat(value) || 0;
-                setSelectedService(updated);
-            };
-
-            // 🆕 HANDLE DESCUENTOS CC
-            const handleDescuentoCCUpdate = (umbral, field, value) => {
-                if (!selectedService) return;
-                const updated = JSON.parse(JSON.stringify(selectedService));
-                if (!updated.descuentos) updated.descuentos = {};
-                if (!updated.descuentos[umbral]) updated.descuentos[umbral] = {};
-                updated.descuentos[umbral][field] = parseFloat(value) || 0;
-                setSelectedService(updated);
-            };
-
-            // 🆕 HANDLE GLOBAL CONFIG
-            const handleGlobalConfigUpdate = (category, field, value) => {
-                const updated = JSON.parse(JSON.stringify(globalConfig));
-                updated[category][field] = value;
-                setGlobalConfig(updated);
-            };
-
-            const handleProjectRuleUpdate = (field, value) => {
-                if (!selectedService) return;
-                const updated = JSON.parse(JSON.stringify(selectedService));
-                if (field === 'regla_calculo') updated.regla_calculo = value;
-                if (field === 'costo_diario' && updated.costos_recursos?.ingeniero_senior) {
-                    updated.costos_recursos.ingeniero_senior.costo_diario = parseFloat(value) || 0;
-                }
-                // 🆕 REGLAS ADICIONALES PENTESTING
-                if (field === 'dias_base' && !updated.reglas) updated.reglas = {};
-                if (field === 'dias_por_app_adicional' && !updated.reglas) updated.reglas = {};
-                if (field === 'retesting_multiplicador' && !updated.reglas) updated.reglas = {};
-                if (updated.reglas) updated.reglas[field] = parseFloat(value) || 0;
-                setSelectedService(updated);
-            };
-
-            const deleteLead = async (id) => {
-                if (!confirm("¿Eliminar este lead de la base de datos?")) return;
-                try {
-                    const res = await fetch(`${API_BASE_URL}/api/quotes/${id}`, { method: 'DELETE' });
-                    if (res.ok) {
-                        setQuotes(quotes.filter(q => q.id !== id));
-                        setMessage({ text: "Registro eliminado", type: "success" });
-                        if (selectedQuote?.id === id) setSelectedQuote(null);
-                    }
-                } catch (e) { setMessage({ text: "Error al borrar", type: "error" }); }
-                finally { setTimeout(() => setMessage(null), 3000); }
-            };
-
-            const saveChanges = async () => {
-                if (!selectedService) return;
-                
-                // Validar antes de guardar
-                if (Object.keys(validationErrors).length > 0) {
-                    setMessage({ text: "Corrige los errores antes de guardar", type: "error" });
-                    setTimeout(() => setMessage(null), 3000);
-                    return;
-                }
-                
-                setSaving(true);
-                try {
-                    const res = await fetch(`${API_BASE_URL}/api/services/${selectedService.servicio_id}`, { 
-                        method: 'PUT', 
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(selectedService) 
-                    });
-                    if (res.ok) {
-                        setMessage({ text: "Sincronización Exitosa - El Chatbot ha sido actualizado", type: "success" });
-                        setServices(services.map(s => s.servicio_id === selectedService.servicio_id ? selectedService : s));
-                    }
-                } catch (err) { 
-                    setMessage({ text: "Error de sincronización", type: "error" }); 
-                } finally { 
-                    setSaving(false); 
-                    setTimeout(() => setMessage(null), 3000); 
-                }
-            };
-
-            // 🆕 GUARDAR CONFIGURACIÓN GLOBAL
-            const saveGlobalConfig = async () => {
-                setSaving(true);
-                try {
-                    const res = await fetch(`${API_BASE_URL}/api/config/global`, { 
-                        method: 'PUT', 
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(globalConfig) 
-                    });
-                    if (res.ok) {
-                        setMessage({ text: "Configuración Global Actualizada", type: "success" });
-                    }
-                } catch (err) { 
-                    setMessage({ text: "Error al guardar configuración", type: "error" }); 
-                } finally { 
-                    setSaving(false); 
-                    setTimeout(() => setMessage(null), 3000); 
-                }
-            };
-
-            const saveQuoteNotes = async () => {
-                setSaving(true);
-                setTimeout(() => {
-                    setQuotes(quotes.map(q => q.id === selectedQuote.id ? selectedQuote : q));
-                    setSaving(false);
-                    setSelectedQuote(null);
-                    setMessage({ text: "Seguimiento actualizado", type: "success" });
-                    setTimeout(() => setMessage(null), 3000);
-                }, 500);
-            };
-
-            const stats = useMemo(() => {
-                const total = quotes.reduce((acc, q) => acc + (q.monto || 0), 0);
-                return { total, count: quotes.length, avg: quotes.length > 0 ? (total / quotes.length).toFixed(0) : 0 };
-            }, [quotes]);
-
-            const filteredQuotes = useMemo(() => {
-                return quotes.filter(q => (q.cliente || "").toLowerCase().includes(searchQuery.toLowerCase()) || (q.servicio || "").toLowerCase().includes(searchQuery.toLowerCase()));
-            }, [quotes, searchQuery]);
-
-            const currentLeads = filteredQuotes.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-            const totalPages = Math.ceil(filteredQuotes.length / itemsPerPage);
-
-            const getServiceIcon = (s) => {
-                const id = (s?.servicio_id || "").toLowerCase();
-                if (s?.categoria === 'infraestructura') return 'activity';
-                if (s?.categoria === 'seguridad' || id.includes('pentesting')) return 'shield';
-                if (id.includes('correo') || id.includes('google')) return 'mail';
-                if (id.includes('nube') || id.includes('gcp')) return 'cloud';
-                if (id.includes('contact')) return 'headphones';
-                return 'package';
-            };
-
-            const getMotorName = (s) => {
-                if (!s) return "Cargando...";
-                if (s.matriz_precios) return "Matriz de Escalamiento";
-                if (s.regla_calculo) return "Algoritmo de Proyecto";
-                if (s.planes) return "Suscripción por Planes";
-                if (s.precios_por_agente_mes_mxn) return "Tarifario por Agentes";
-                if (s.tipos_instancia) return "Instancias Nube";
-                return "Estructura Personalizada";
-            };
-
-            if (loading) return (
-                <div className="h-screen w-full flex flex-col items-center justify-center bg-slate-900 text-white font-bold">
-                    <div className="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-                    <p className="opacity-50 uppercase tracking-widest text-[10px]">Autenticando B-drive Core...</p>
-                </div>
-            );
-
-            return (
-                <div className="flex h-screen overflow-hidden relative bg-[#f8fafc]">
-                    {/* Sidebar Desktop */}
-                    <aside className="hidden lg:flex w-72 bg-slate-900 text-slate-300 flex flex-col border-r border-slate-800 z-30 shadow-2xl">
-                        <div className="p-8 flex items-center space-x-3">
-                            <div className="bg-cyan-500 p-2.5 rounded-2xl shadow-lg shadow-cyan-500/20"><i data-lucide="zap" className="w-6 h-6 text-white"></i></div>
-                            <div><h1 className="text-xl font-extrabold text-white tracking-tight leading-none">B-drive</h1><span className="text-[9px] text-cyan-400 font-black uppercase tracking-[0.2em]">Admin Console</span></div>
+            if (device === 'android') {
+                // INSTRUCCIONES ANDROID (Estilo visual mejorado)
+                installContainer.innerHTML = `
+                    <div class="instruction-box">
+                        <div class="instruction-step">
+                            <p class="text-xs text-gray-200 font-bold mb-1">Paso 1:</p>
+                            <p class="text-xs text-gray-400">Clic en el botón azul "Instalar" si te lo solicita, o "Abrir en App" si ya la tienes.</p>
+                            <!-- REEMPLAZA CON URL S3 -->
+                            <img src="https://placehold.co/600x400/png?text=Instruccion+Android+Paso+1" class="step-img" alt="Paso 1 Android">
                         </div>
-                        <nav className="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar pt-4">
-                            <button onClick={() => setView('dashboard')} className={`w-full flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all ${view === 'dashboard' ? 'sidebar-item-active text-white bg-slate-800/50' : 'hover:bg-slate-800/30'}`}>
-                                <i data-lucide="layout-dashboard" className="w-5 h-5"></i><span className="font-semibold text-sm">Dashboard Global</span>
-                            </button>
-                            <button onClick={() => { setView('quotes'); setCurrentPage(1); }} className={`w-full flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all ${view === 'quotes' ? 'sidebar-item-active text-white bg-slate-800/50' : 'hover:bg-slate-800/30'}`}>
-                                <i data-lucide="file-text" className="w-5 h-5"></i><span className="font-semibold text-sm">Leads y Auditoría</span>
-                            </button>
-                            {/* 🆕 CONFIGURACIÓN GLOBAL */}
-                            <button onClick={() => setView('global')} className={`w-full flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all ${view === 'global' ? 'sidebar-item-active text-white bg-slate-800/50' : 'hover:bg-slate-800/30'}`}>
-                                <i data-lucide="settings" className="w-5 h-5"></i><span className="font-semibold text-sm">Configuración Global</span>
-                            </button>
-                            <div className="pt-8 pb-3 px-5 font-bold text-[10px] text-slate-500 uppercase tracking-[0.15em]">Gestión de Precios</div>
-                            {services.map(s => (
-                                <button key={s.servicio_id} onClick={() => { setSelectedService(s); setView('editor'); }} className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all group ${selectedService?.servicio_id === s.servicio_id && view === 'editor' ? 'sidebar-item-active text-white bg-slate-800/50' : 'hover:bg-slate-800/30'}`}>
-                                    <div className="flex items-center space-x-3">
-                                        <i data-lucide={getServiceIcon(s)} className="w-4 h-4 opacity-70 group-hover:opacity-100"></i>
-                                        <span className="text-sm font-medium">{cleanServiceName(s.nombre_corto || s.nombre)}</span>
-                                    </div>
-                                    <i data-lucide="chevron-right" className={`w-3 h-3 transition-transform ${selectedService?.servicio_id === s.servicio_id ? 'rotate-90 opacity-100' : 'opacity-0 group-hover:opacity-40'}`}></i>
-                                </button>
-                            ))}
-                        </nav>
-                        <div className="p-8 border-t border-slate-800 flex items-center space-x-3 text-[10px] opacity-40 font-bold uppercase italic"><div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div><span>Sync Online</span></div>
-                    </aside>
-
-                    {/* Mobile Menu */}
-                    {isSidebarOpen && <div className="lg:hidden fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)}></div>}
-                    <aside className={`fixed inset-y-0 left-0 z-[70] w-72 bg-slate-900 text-slate-300 flex flex-col border-r border-slate-800 sidebar-mobile ${isSidebarOpen ? 'open' : ''} lg:hidden shadow-2xl`}>
-                        <div className="p-8 flex items-center justify-between border-b border-slate-800">
-                            <h1 className="text-xl font-black text-white tracking-tighter">B-drive</h1>
-                            <button onClick={() => setIsSidebarOpen(false)} className="text-slate-400 p-2"><i data-lucide="x" className="w-6 h-6"></i></button>
+                        
+                        <div class="instruction-step">
+                            <p class="text-xs text-gray-200 font-bold mb-1">Paso 2:</p>
+                            <p class="text-xs text-gray-400">Clic en "Abrir" para ver tu tarjeta en Wallet.</p>
+                            <!-- REEMPLAZA CON URL S3 -->
+                            <img src="https://placehold.co/600x400/png?text=Instruccion+Android+Paso+2" class="step-img" alt="Paso 2 Android">
                         </div>
-                        <nav className="flex-1 px-4 space-y-1 pt-6 overflow-y-auto">
-                            <button onClick={() => { setView('dashboard'); setIsSidebarOpen(false); }} className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl ${view === 'dashboard' ? 'sidebar-item-active bg-slate-800' : ''}`}><i data-lucide="layout-dashboard" className="w-5 h-5"></i><span>Dashboard</span></button>
-                            <button onClick={() => { setView('quotes'); setIsSidebarOpen(false); }} className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl ${view === 'quotes' ? 'sidebar-item-active bg-slate-800' : ''}`}><i data-lucide="file-text" className="w-5 h-5"></i><span>Leads</span></button>
-                            <button onClick={() => { setView('global'); setIsSidebarOpen(false); }} className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl ${view === 'global' ? 'sidebar-item-active bg-slate-800' : ''}`}><i data-lucide="settings" className="w-5 h-5"></i><span>Config Global</span></button>
-                            {services.map(s => (
-                                <button key={s.servicio_id} onClick={() => { setSelectedService(s); setView('editor'); setIsSidebarOpen(false); }} className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl ${selectedService?.servicio_id === s.servicio_id && view === 'editor' ? 'sidebar-item-active bg-slate-800' : ''}`}><i data-lucide={getServiceIcon(s)} className="w-4 h-4"></i><span>{cleanServiceName(s.nombre_corto || s.nombre)}</span></button>
-                            ))}
-                        </nav>
-                    </aside>
+                    </div>
 
-                    <main className="flex-1 flex flex-col min-w-0 bg-[#f8fafc] overflow-hidden">
-                        <header className="h-20 glass-panel px-6 md:px-10 flex items-center justify-between z-10 sticky top-0">
-                            <div className="flex items-center space-x-4">
-                                <button onClick={() => setIsSidebarOpen(true)} className="lg:hidden p-2.5 text-slate-600 bg-white rounded-xl shadow-sm border border-slate-200"><i data-lucide="menu" className="w-6 h-6"></i></button>
-                                <h2 className="text-sm md:text-lg font-bold text-slate-800 truncate uppercase tracking-[0.1em] font-black">
-                                    {view === 'quotes' ? 'Gestión de Leads' : view === 'dashboard' ? 'Performance Global' : view === 'global' ? 'Configuración Global' : cleanServiceName(selectedService?.nombre)}
-                                </h2>
-                            </div>
-                            <div className="flex items-center space-x-2 md:space-x-5">
-                                <button onClick={fetchInitialData} className="p-2.5 text-slate-400 hover:text-cyan-600 bg-white rounded-xl shadow-sm border border-slate-100 hover:border-cyan-200 active:rotate-180 transition-all"><i data-lucide="refresh-cw" className="w-4 md:w-5 h-4 md:h-5"></i></button>
-                                <div className="h-10 w-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black shadow-xl border-2 border-slate-800">B</div>
-                            </div>
-                        </header>
+                    <a href="${passes.android}" class="btn-install-android">
+                        <i data-lucide="smartphone" class="w-5 h-5"></i>
+                        Obtener Mi Tarjeta
+                    </a>
+                `;
+                trackEvent('pass_install_view', 'android');
 
-                        <div className="flex-1 overflow-y-auto p-4 md:p-10 custom-scrollbar">
-                            {message && (
-                                <div className={`animate-fade-in mb-8 p-4.5 rounded-2xl flex items-center shadow-2xl ${message.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'}`}>
-                                    <i data-lucide={message.type === 'success' ? 'check-circle' : 'alert-circle'} className="w-5 h-5 mr-3 shrink-0"></i><span className="font-bold text-xs md:text-sm tracking-tight">{message.text}</span>
-                                </div>
-                            )}
-
-                            {/* DASHBOARD VIEW */}
-                            {view === 'dashboard' && (
-                                <div className="animate-fade-in space-y-8">
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-8">
-                                        {[
-                                            { t: "Ingresos Proyectados", v: `$${Number(stats.total).toLocaleString()}`, c: "text-cyan-600" },
-                                            { t: "Leads Totales", v: stats.count, c: "text-slate-800" },
-                                            { t: "Ticket Promedio", v: `$${Number(stats.avg).toLocaleString()}`, c: "text-indigo-600" },
-                                            { t: "Disponibilidad", v: "100%", c: "text-emerald-500" }
-                                        ].map((card, i) => (
-                                            <div key={i} className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:shadow-cyan-500/5 hover:-translate-y-1">
-                                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2">{card.t}</p>
-                                                <h3 className={`text-2xl md:text-3xl font-black ${card.c} tracking-tight`}>{card.v}</h3>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                                        <div className="bg-white p-7 md:p-10 rounded-[3rem] border border-slate-100 shadow-sm min-h-[400px]">
-                                            <h4 className="text-sm font-black text-slate-800 mb-10 flex items-center uppercase tracking-widest"><i data-lucide="trending-up" className="w-5 h-5 mr-3 text-cyan-500"></i> Tendencia de Cierre</h4>
-                                            <div className="chart-container"><canvas id="leadsChart"></canvas></div>
-                                        </div>
-                                        <div className="bg-white p-7 md:p-10 rounded-[3rem] border border-slate-100 shadow-sm min-h-[400px]">
-                                            <h4 className="text-sm font-black text-slate-800 mb-10 flex items-center uppercase tracking-widest"><i data-lucide="pie-chart" className="w-5 h-5 mr-3 text-indigo-500"></i> Distribución de Leads</h4>
-                                            <div className="chart-container"><canvas id="serviceChart"></canvas></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* QUOTES VIEW - Sin cambios */}
-                            {view === 'quotes' && (
-                                <div className="animate-fade-in space-y-6">
-                                    <div className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col sm:flex-row gap-5">
-                                        <div className="relative flex-1">
-                                            <i data-lucide="search" className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                                            <input type="text" placeholder="Filtrar por empresa o ID..." value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }} className="w-full pl-12 pr-6 py-4 bg-slate-50 rounded-[1.5rem] border-none outline-none focus:ring-4 focus:ring-cyan-500/10 text-sm font-medium" />
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-sm overflow-x-auto custom-scrollbar">
-                                        <table className="w-full text-left min-w-[850px]">
-                                            <thead><tr className="bg-slate-50/70 border-b border-slate-100"><th className="p-7 text-[10px] font-black text-slate-400 uppercase tracking-widest">Prospecto / ID</th><th className="p-7 text-[10px] font-black text-slate-400 uppercase tracking-widest">Solución</th><th className="p-7 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Inversión</th><th className="p-7 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Gestión</th></tr></thead>
-                                            <tbody className="divide-y divide-slate-50">
-                                                {currentLeads.map(q => (
-                                                    <tr key={q.id} className="hover:bg-slate-50/40 transition-all group">
-                                                        <td className="p-7"><p className="text-sm font-extrabold text-slate-800 tracking-tight">{q.cliente}</p><p className="text-[10px] text-slate-400 mt-1 font-mono uppercase tracking-tighter">{q.id.substring(0,18)}...</p></td>
-                                                        <td className="p-7 text-sm font-semibold text-slate-500">{cleanServiceName(q.servicio)}</td>
-                                                        <td className="p-7 text-sm font-black text-right">${(q.monto || 0).toLocaleString()} <span className="text-[9px] opacity-40 ml-1 uppercase">MXN</span></td>
-                                                        <td className="p-7 text-center">
-                                                            <div className="flex items-center justify-center space-x-3">
-                                                                <button onClick={() => setSelectedQuote(q)} className="p-2.5 text-slate-300 hover:text-cyan-600 hover:bg-white border border-transparent hover:border-cyan-100 rounded-xl transition-all shadow-sm"><i data-lucide="edit-3" className="w-4 h-4"></i></button>
-                                                                <button onClick={() => deleteLead(q.id)} className="p-2.5 text-slate-300 hover:text-rose-600 hover:bg-white border border-transparent hover:border-rose-100 rounded-xl transition-all shadow-sm"><i data-lucide="trash-2" className="w-4 h-4"></i></button>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                        <div className="p-7 border-t border-slate-50 flex justify-between items-center bg-slate-50/30">
-                                            <p className="text-[11px] text-slate-400 font-extrabold uppercase tracking-widest">Lead {Math.min((currentPage-1)*itemsPerPage+1, filteredQuotes.length)} a {Math.min(currentPage*itemsPerPage, filteredQuotes.length)} de {filteredQuotes.length}</p>
-                                            <div className="flex items-center space-x-2">
-                                                <button onClick={() => setCurrentPage(p => Math.max(1, p-1))} disabled={currentPage === 1} className="p-2.5 rounded-xl bg-white border border-slate-200 disabled:opacity-30"><i data-lucide="chevron-left" className="w-4 h-4"></i></button>
-                                                <button onClick={() => setCurrentPage(p => Math.min(totalPages, p+1))} disabled={currentPage === totalPages || totalPages === 0} className="p-2.5 rounded-xl bg-white border border-slate-200 disabled:opacity-30"><i data-lucide="chevron-right" className="w-4 h-4"></i></button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* 🆕 CONFIGURACIÓN GLOBAL VIEW */}
-                            {view === 'global' && globalConfig && (
-                                <div className="animate-fade-in max-w-5xl mx-auto space-y-8 md:space-y-12 pb-20">
-                                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-8">
-                                        <div>
-                                            <h3 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tighter leading-tight">Configuración Global</h3>
-                                            <p className="text-slate-500 text-sm mt-2">Parámetros que aplican a todos los servicios</p>
-                                        </div>
-                                        <button onClick={saveGlobalConfig} disabled={saving} className="w-full sm:w-auto bg-cyan-500 text-white px-10 md:px-14 py-4 md:py-5 rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-cyan-500/30 hover:bg-cyan-400 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center">
-                                            {saving ? <div className="animate-spin h-4 w-4 border-2 border-white/30 border-t-white rounded-full mr-3"></div> : <i data-lucide="save" className="w-5 h-5 mr-4"></i>}Guardar Config
-                                        </button>
-                                    </div>
-
-                                    {/* FISCALES */}
-                                    <div className="bg-white rounded-[3rem] p-8 md:p-12 border border-slate-100 shadow-sm">
-                                        <h4 className="text-[11px] font-black text-slate-900 uppercase mb-10 flex items-center tracking-[0.3em]">
-                                            <i data-lucide="file-text" className="w-5 h-5 mr-4 text-cyan-500"></i>Parámetros Fiscales
-                                        </h4>
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                            <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase block mb-3">IVA (%)</label>
-                                                <input type="number" value={globalConfig.fiscales.iva_porcentaje} onChange={(e) => handleGlobalConfigUpdate('fiscales', 'iva_porcentaje', parseFloat(e.target.value))} className="w-full px-6 py-4 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-cyan-500/20 outline-none text-xl font-black" />
-                                            </div>
-                                            <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase block mb-3">Retención ISR (%)</label>
-                                                <input type="number" value={globalConfig.fiscales.retencion_isr} onChange={(e) => handleGlobalConfigUpdate('fiscales', 'retencion_isr', parseFloat(e.target.value))} className="w-full px-6 py-4 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-cyan-500/20 outline-none text-xl font-black" />
-                                            </div>
-                                            <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase block mb-3">Retención IVA (%)</label>
-                                                <input type="number" value={globalConfig.fiscales.retencion_iva} onChange={(e) => handleGlobalConfigUpdate('fiscales', 'retencion_iva', parseFloat(e.target.value))} className="w-full px-6 py-4 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-cyan-500/20 outline-none text-xl font-black" />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* FINANCIEROS */}
-                                    <div className="bg-white rounded-[3rem] p-8 md:p-12 border border-slate-100 shadow-sm">
-                                        <h4 className="text-[11px] font-black text-slate-900 uppercase mb-10 flex items-center tracking-[0.3em]">
-                                            <i data-lucide="dollar-sign" className="w-5 h-5 mr-4 text-cyan-500"></i>Parámetros Financieros
-                                        </h4>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                            <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase block mb-3">Tipo de Cambio USD/MXN</label>
-                                                <input type="number" step="0.01" value={globalConfig.financieros.tipo_cambio_usd_mxn} onChange={(e) => handleGlobalConfigUpdate('financieros', 'tipo_cambio_usd_mxn', parseFloat(e.target.value))} className="w-full px-6 py-4 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-cyan-500/20 outline-none text-xl font-black" />
-                                            </div>
-                                            <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase block mb-3">Vigencia Cotización (días)</label>
-                                                <input type="number" value={globalConfig.financieros.dias_vigencia_cotizacion} onChange={(e) => handleGlobalConfigUpdate('financieros', 'dias_vigencia_cotizacion', parseInt(e.target.value))} className="w-full px-6 py-4 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-cyan-500/20 outline-none text-xl font-black" />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* CONTACTO */}
-                                    <div className="bg-white rounded-[3rem] p-8 md:p-12 border border-slate-100 shadow-sm">
-                                        <h4 className="text-[11px] font-black text-slate-900 uppercase mb-10 flex items-center tracking-[0.3em]">
-                                            <i data-lucide="phone" className="w-5 h-5 mr-4 text-cyan-500"></i>Información de Contacto
-                                        </h4>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                            <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase block mb-3">Email Ventas</label>
-                                                <input type="email" value={globalConfig.contacto.email} onChange={(e) => handleGlobalConfigUpdate('contacto', 'email', e.target.value)} className="w-full px-6 py-4 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-cyan-500/20 outline-none text-lg font-semibold" />
-                                            </div>
-                                            <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase block mb-3">Teléfono</label>
-                                                <input type="tel" value={globalConfig.contacto.telefono} onChange={(e) => handleGlobalConfigUpdate('contacto', 'telefono', e.target.value)} className="w-full px-6 py-4 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-cyan-500/20 outline-none text-lg font-semibold" />
-                                            </div>
-                                            <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase block mb-3">WhatsApp</label>
-                                                <input type="tel" value={globalConfig.contacto.whatsapp} onChange={(e) => handleGlobalConfigUpdate('contacto', 'whatsapp', e.target.value)} className="w-full px-6 py-4 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-cyan-500/20 outline-none text-lg font-semibold" />
-                                            </div>
-                                            <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase block mb-3">Sitio Web</label>
-                                                <input type="url" value={globalConfig.contacto.sitio_web} onChange={(e) => handleGlobalConfigUpdate('contacto', 'sitio_web', e.target.value)} className="w-full px-6 py-4 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-cyan-500/20 outline-none text-lg font-semibold" />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* BRANDING */}
-                                    <div className="bg-white rounded-[3rem] p-8 md:p-12 border border-slate-100 shadow-sm">
-                                        <h4 className="text-[11px] font-black text-slate-900 uppercase mb-10 flex items-center tracking-[0.3em]">
-                                            <i data-lucide="palette" className="w-5 h-5 mr-4 text-cyan-500"></i>Branding
-                                        </h4>
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                            <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase block mb-3">Nombre Empresa</label>
-                                                <input type="text" value={globalConfig.branding.empresa_nombre} onChange={(e) => handleGlobalConfigUpdate('branding', 'empresa_nombre', e.target.value)} className="w-full px-6 py-4 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-cyan-500/20 outline-none text-xl font-black" />
-                                            </div>
-                                            <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase block mb-3">Logo URL (opcional)</label>
-                                                <input type="url" value={globalConfig.branding.logo_url} onChange={(e) => handleGlobalConfigUpdate('branding', 'logo_url', e.target.value)} className="w-full px-6 py-4 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-cyan-500/20 outline-none text-lg font-semibold" />
-                                            </div>
-                                            <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase block mb-3">Color Primario</label>
-                                                <div className="flex items-center space-x-4">
-                                                    <input type="color" value={globalConfig.branding.color_primario} onChange={(e) => handleGlobalConfigUpdate('branding', 'color_primario', e.target.value)} className="w-16 h-16 rounded-xl border-2 border-slate-200 cursor-pointer" />
-                                                    <input type="text" value={globalConfig.branding.color_primario} onChange={(e) => handleGlobalConfigUpdate('branding', 'color_primario', e.target.value)} className="flex-1 px-6 py-4 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-cyan-500/20 outline-none font-mono font-bold" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* EDITOR VIEW - CON TODAS LAS MEJORAS */}
-                            {view === 'editor' && selectedService && (
-                                <div className="animate-fade-in max-w-5xl mx-auto space-y-8 md:space-y-12 pb-20 text-left">
-                                    {/* Continuará en la siguiente parte... */}
-                                    {/* Por límites de espacio, te lo envío en el siguiente mensaje */}
-                                </div>
-                            )}
-
-                            {/* MODAL QUOTE - Sin cambios */}
-                            {selectedQuote && (
-                                <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 md:p-6 modal-overlay animate-fade-in">
-                                    <div className="bg-white w-full max-w-3xl rounded-[2.5rem] md:rounded-[4rem] shadow-2xl overflow-hidden flex flex-col max-h-[95vh] sm:max-h-[92vh]">
-                                        <div className="p-8 md:p-12 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                                            <div className="min-w-0 flex-1"><h3 className="text-xl md:text-2xl font-black text-slate-900 truncate tracking-tight">Expediente de Lead</h3><p className="text-[10px] text-cyan-600 font-black mt-2 uppercase tracking-[0.25em] truncate">REF: {selectedQuote.id}</p></div>
-                                            <button onClick={() => setSelectedQuote(null)} className="ml-6 p-3 hover:bg-white rounded-[1.5rem] text-slate-400 hover:text-slate-900 transition-all border border-transparent hover:border-slate-200"><i data-lucide="x" className="w-6 h-6"></i></button>
-                                        </div>
-                                        <div className="flex-1 overflow-y-auto p-8 md:p-12 space-y-10 custom-scrollbar text-left">
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-10">
-                                                <div className="bg-slate-50 p-8 rounded-[2.5rem] border border-slate-100 shadow-inner">
-                                                    <p className="text-[10px] font-black text-slate-400 uppercase mb-3 tracking-[0.15em]">Entidad Comercial</p>
-                                                    <input type="text" value={selectedQuote.cliente || ""} onChange={(e) => setSelectedQuote({...selectedQuote, cliente: e.target.value})} className="bg-transparent border-none p-0 font-black text-slate-800 text-xl w-full focus:ring-0" placeholder="Nombre..." />
-                                                </div>
-                                                <div className="bg-cyan-50 p-8 rounded-[2.5rem] border border-cyan-100">
-                                                    <p className="text-[10px] font-black text-cyan-500 uppercase mb-3 tracking-[0.15em]">Valor Estimado</p>
-                                                    <p className="text-2xl md:text-3xl font-black text-cyan-700 tracking-tight">${(selectedQuote.monto || 0).toLocaleString()} <span className="text-xs">MXN</span></p>
-                                                </div>
-                                            </div>
-                                            <div className="space-y-5">
-                                                <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center px-2"><i data-lucide="message-square" className="w-4 h-4 mr-3 text-cyan-500"></i> Bitácora de Seguimiento</h4>
-                                                <textarea className="w-full h-40 md:h-52 p-8 bg-slate-50 rounded-[2.5rem] border-2 border-transparent outline-none focus:border-cyan-500/20 text-sm text-slate-600 font-medium notes-textarea shadow-inner transition-all leading-relaxed" placeholder="Registra llamadas, correos o acuerdos..." value={selectedQuote.anotaciones || ""} onChange={(e) => setSelectedQuote({...selectedQuote, anotaciones: e.target.value})}></textarea>
-                                            </div>
-                                            <div>
-                                                <h4 className="text-[10px] font-black text-slate-400 uppercase mb-5 tracking-widest flex items-center px-2"><i data-lucide="terminal" className="w-3.5 h-3.5 mr-3 text-indigo-500"></i> Datos Técnicos Capturados</h4>
-                                                <div className="bg-slate-900 rounded-[2.5rem] p-8 font-mono text-[10px] text-cyan-400/80 shadow-2xl overflow-x-auto leading-loose border-2 border-slate-800/50"><pre>{JSON.stringify(selectedQuote.entradas_usuario || selectedQuote.detalles_tecnicos, null, 2)}</pre></div>
-                                            </div>
-                                        </div>
-                                        <div className="p-8 md:p-12 border-t border-slate-100 flex flex-col sm:flex-row justify-between bg-slate-50/50 gap-6">
-                                            <button onClick={() => deleteLead(selectedQuote.id)} className="order-2 sm:order-1 px-6 py-4 text-rose-500 font-black text-[10px] uppercase tracking-widest hover:bg-rose-50 rounded-2xl transition-all flex items-center justify-center sm:justify-start hover:shadow-xl"><i data-lucide="trash-2" className="w-4.5 h-4.5 mr-3"></i>Borrar Lead</button>
-                                            <div className="order-1 sm:order-2 flex space-x-3 sm:space-x-4">
-                                                <button onClick={() => setSelectedQuote(null)} className="flex-1 sm:flex-none px-10 py-4 bg-white text-slate-400 font-black rounded-2xl text-[10px] uppercase tracking-widest border border-slate-200 shadow-sm hover:bg-slate-50 transition-all">Cancelar</button>
-                                                <button onClick={saveQuoteNotes} disabled={saving} className="flex-1 sm:flex-none px-12 py-4 bg-slate-900 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-2xl hover:bg-slate-800 transition-all flex items-center justify-center">{saving ? <div className="animate-spin h-4 w-4 border-2 border-white/30 border-t-white rounded-full mr-3"></div> : <i data-lucide="save" className="w-4 h-4 mr-3"></i>}Actualizar</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
+            } else if (device === 'ios') {
+                // INSTRUCCIONES IPHONE (Estilo visual mejorado)
+                installContainer.innerHTML = `
+                    <div class="instruction-box">
+                        <div class="instruction-step">
+                            <p class="text-xs text-gray-200 font-bold mb-2">Instrucciones rápidas:</p>
+                            <ul class="text-xs text-gray-400 list-decimal ml-4 space-y-2">
+                                <li>Presiona el botón negro "Obtener Pase" abajo.</li>
+                                <li>Cuando aparezca la tarjeta, toca <strong>"Añadir"</strong> en la esquina superior derecha de tu pantalla.</li>
+                            </ul>
+                            <!-- REEMPLAZA CON URL S3 -->
+                            <img src="https://placehold.co/600x400/png?text=Instruccion+iPhone+Boton+Añadir" class="step-img" alt="Instrucción iPhone">
                         </div>
-                    </main>
-                </div>
-            );
-        };
+                    </div>
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+                    <a href="${passes.ios}" class="btn-install-ios">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Add_to_Apple_Wallet_badge.svg" class="h-8" alt="Add to Apple Wallet">
+                    </a>
+                `;
+                trackEvent('pass_install_view', 'ios');
+
+            } else {
+                // DESKTOP
+                installContainer.innerHTML = `
+                    <div class="instruction-box text-center">
+                        <p class="text-xs text-yellow-400 mb-2 font-bold uppercase tracking-widest">Dispositivo de Escritorio</p>
+                        <p class="text-xs text-gray-400">Esta tarjeta está diseñada para móviles. Por favor, abre estos enlaces en tu celular.</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 mt-4">
+                        <a href="${passes.ios}" target="_blank" class="flex flex-col items-center justify-center p-4 bg-gray-900 border border-gray-800 rounded-xl hover:bg-black transition">
+                            <i data-lucide="apple" class="w-6 h-6 mb-2 text-white"></i>
+                            <span class="text-[10px] text-gray-400">iPhone</span>
+                        </a>
+                        <a href="${passes.android}" target="_blank" class="flex flex-col items-center justify-center p-4 bg-gray-900 border border-gray-800 rounded-xl hover:bg-black transition">
+                            <i data-lucide="smartphone" class="w-6 h-6 mb-2 text-emerald-500"></i>
+                            <span class="text-[10px] text-gray-400">Android</span>
+                        </a>
+                    </div>
+                `;
+                trackEvent('pass_install_view', 'desktop');
+            }
+            lucide.createIcons();
+        }
+
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay || e.target.classList.contains('py-8')) closeRegistration();
+        });
+
+        // Init Tracking
+        trackEvent('view', 'landing_page_visit');
     </script>
 </body>
 </html>
